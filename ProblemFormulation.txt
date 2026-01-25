@@ -34,27 +34,3 @@ ESSENTIAL VARIABLES:
 FEASIBILITY:
 The project is feasible within a semester timeline using publicly available datasets. Initial milestones focus on structured data and exploratory analysis, with later extensions incorporating unstructured fan sentiment data.
 
-=======
-PROJECT TITLE: Analyzing Social Media Sentiment for Mental Health Crisis Detection
-
-CENTRAL QUESTION:
-My project focuses on whether a machine learning model can accurately distinguish between "neutral" language and language that indicates psychological distress, such as anxiety or depression, using unstructured text data from social media. I want to explore if subtle shifts in how we communicate online can reveal underlying mental health struggles that might otherwise go unnoticed.
-
-IMPORTANCE & CONTEXT:
-This is critical because traditional mental healthcare is largely reactive—it usually starts only after someone seeks professional help. By contrast, social media data is proactive. Because so much of our life is lived online, identifying distress patterns early through data science could lead to interventions before a situation becomes a crisis.
-
-SUCCESS CRITERIA:
-Success for this project isn't just about a high accuracy percentage; it’s about finding a balance between Precision and Recall. I am specifically aiming for a high Recall score to ensure the model rarely misses someone in distress, while maintaining enough Precision to avoid "alert fatigue," where healthy users are overwhelmed with unnecessary resources.
-
-ESSENTIAL VARIABLES:
-I will be focusing on three main categories of data:
-1. Linguistic Tokens: The actual words and phrases that distinguish "hopeless" vocabulary from "hopeful" language.
-2. Sentiment Scores: Numerical values that quantify the emotional weight of a post.
-3. Contextual Labels: Verified ground-truth labels (like 'Anxiety' or 'Depression') from curated datasets to ensure the model learns correctly.
-
-TARGET USERS:
-The results would be most valuable for developers of wellness apps looking to build "safety nudges" or proactive check-in features. Additionally, public health researchers could use these models to monitor the mental health trends of specific communities during high-stress global events.
-
-FEASIBILITY:
-This is highly realistic for a semester-long project. Using public, anonymized datasets from Kaggle and Reddit allows me to bypass the privacy and legal hurdles of clinical health records (HIPAA). Furthermore, Python libraries like NLTK, Spacy, and Scikit-learn provide a clear technical path for the text cleaning and modeling required.
->>>>>>> a7820d57d4d2953b0ac6e330373b7dcac4a97e15
