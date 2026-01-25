@@ -23,7 +23,7 @@ DATA SOURCES:
    - Ball-by-ball IPL match data (2008-2024) from Cricsheet.
    - Match metadata (season, venue, match stage).
 2. Unstructured Data:
-   - Twitter/X fan-generated content used to construct a pressure index.
+   - Youtube Comments content used to construct a pressure index.
 
 ESSENTIAL VARIABLES:
 - Player performance: runs scored, strike rate, dismissal.
