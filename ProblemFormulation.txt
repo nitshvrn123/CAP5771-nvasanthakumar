@@ -32,3 +32,4 @@ ESSENTIAL VARIABLES:
 
 FEASIBILITY:
 The project is feasible within a semester timeline using publicly available datasets. Initial milestones focus on structured data and exploratory analysis, with later extensions incorporating unstructured fan sentiment data.
+
