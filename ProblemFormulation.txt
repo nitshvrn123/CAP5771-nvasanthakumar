@@ -1,22 +1,34 @@
-PROJECT TITLE: Analyzing Social Media Sentiment for Mental Health Crisis Detection
+PROJECT TITLE: Quantifying Performance Risk in Cricket Using Match Pressure and Fan Sentiment
 
 CENTRAL QUESTION:
-My project focuses on whether a machine learning model can accurately distinguish between "neutral" language and language that indicates psychological distress, such as anxiety or depression, using unstructured text data from social media. I want to explore if subtle shifts in how we communicate online can reveal underlying mental health struggles that might otherwise go unnoticed.
+Does external pressure, proxied through match importance and fan sentiment, help explain variability and uncertainty in a cricket player’s performance beyond historical performance alone?
+
+PROBLEM FORMULATION:
+Traditional cricket performance analysis focuses on averages and historical statistics. However, player outcomes often vary significantly in high-pressure situations such as playoffs and finals. This project investigates whether pressure-related signals—derived from match context and fan reactions—are associated with increased performance variability, even when a player’s underlying skill remains constant.
+
+The project does not attempt to diagnose mental health conditions. Instead, it studies whether observable external pressure indicators correlate with increased uncertainty or risk in player-level outcomes.
 
 IMPORTANCE & CONTEXT:
-This is critical because traditional mental healthcare is largely reactive—it usually starts only after someone seeks professional help. By contrast, social media data is proactive. Because so much of our life is lived online, identifying distress patterns early through data science could lead to interventions before a situation becomes a crisis.
+Understanding performance variability under pressure is valuable for team selection, strategy planning, and risk-aware decision-making in professional sports. While experienced fans may subjectively assess pressure handling, this project aims to quantify these effects using data-driven methods.
 
 SUCCESS CRITERIA:
-Success for this project isn't just about a high accuracy percentage; it’s about finding a balance between Precision and Recall. I am specifically aiming for a high Recall score to ensure the model rarely misses someone in distress, while maintaining enough Precision to avoid "alert fatigue," where healthy users are overwhelmed with unnecessary resources.
+Success is defined by:
+- Demonstrating measurable differences in performance variability across match stages (league vs playoffs vs finals).
+- Showing that pressure-related features add explanatory value beyond historical performance averages.
+- Producing interpretable visualizations and summaries that clearly communicate these effects.
+
+DATA SOURCES:
+1. Structured Data:
+   - Ball-by-ball IPL match data (2008-2024) from Cricsheet.
+   - Match metadata (season, venue, match stage).
+2. Unstructured Data:
+   - Twitter/X fan-generated content used to construct a pressure index.
 
 ESSENTIAL VARIABLES:
-I will be focusing on three main categories of data:
-1. Linguistic Tokens: The actual words and phrases that distinguish "hopeless" vocabulary from "hopeful" language.
-2. Sentiment Scores: Numerical values that quantify the emotional weight of a post.
-3. Contextual Labels: Verified ground-truth labels (like 'Anxiety' or 'Depression') from curated datasets to ensure the model learns correctly.
-
-TARGET USERS:
-The results would be most valuable for developers of wellness apps looking to build "safety nudges" or proactive check-in features. Additionally, public health researchers could use these models to monitor the mental health trends of specific communities during high-stress global events.
+- Player performance: runs scored, strike rate, dismissal.
+- Match context: venue, season, match stage (league, playoffs, final).
+- Derived features: recent form, performance variance, stage-based pressure indicators.
+- External pressure: fan sentiment intensity and volume.
 
 FEASIBILITY:
-This is highly realistic for a semester-long project. Using public, anonymized datasets from Kaggle and Reddit allows me to bypass the privacy and legal hurdles of clinical health records (HIPAA). Furthermore, Python libraries like NLT
+The project is feasible within a semester timeline using publicly available datasets. Initial milestones focus on structured data and exploratory analysis, with later extensions incorporating unstructured fan sentiment data.
