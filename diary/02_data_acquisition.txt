@@ -1,0 +1,65 @@
+DIARY ENTRY: DATA ACQUISITION (SOURCES AND RELEVANCE)
+
+PROJECT CONTEXT:
+The objective of this project is to study whether external pressure signals are associated with increased variability and uncertainty in cricket player performance. To support this goal, I acquired both structured match-performance data and unstructured fan-generated text data. This combination allows pressure to be modeled using observable signals while grounding the analysis in objective outcomes.
+
+
+STRUCTURED DATA: CRICKET MATCH AND PLAYER PERFORMANCE
+
+Source:
+Cricsheet (https://cricsheet.org)
+
+Description:
+The structured dataset consists of ball-by-ball Indian Premier League (IPL) match data spanning seasons from 2008 to 2024. The data is publicly available and widely used for cricket analytics and research.
+
+Data Components:
+- Match metadata: match ID, date, venue, competition
+- Ball-level records: batter, bowler, runs, extras, dismissals
+- Aggregated player-level metrics: runs scored, balls faced, strike rate, dismissals
+
+Relevance:
+This dataset provides objective and fine-grained measurements of player performance. It enables both average-based analysis and variability-based analysis, which is critical for studying performance risk under pressure.
+
+Acquisition Method:
+The data was downloaded directly from Cricsheet in YAML and CSV formats. Ball-by-ball records were parsed using Python and aggregated into player–match level datasets suitable for analysis.
+
+
+UNSTRUCTURED DATA: FAN REACTIONS FROM YOUTUBE COMMENTS
+
+Source:
+YouTube Data API v3
+
+Description:
+To capture external pressure signals, fan-generated comments were collected from YouTube videos related to IPL matches. The focus was on high-pressure contexts such as finals, playoffs, eliminators, last-over finishes, and post-match press conferences.
+
+Query Design:
+Search queries were constructed to emphasize emotionally intense situations rather than specific teams alone. Examples include:
+- IPL final fan reaction
+- IPL playoffs reaction
+- IPL last over thriller reaction
+- IPL captain post match press conference
+
+This ensured broad coverage across teams and match stages.
+
+Scale:
+Approximately 49,000 unique comments were collected after cleaning and deduplication.
+
+Relevance:
+Fan comments act as a proxy for the emotional environment surrounding a match. While they do not measure player psychology directly, they capture collective emotional intensity, sentiment volatility, and pressure-related language that can be quantified and analyzed
+
+ETHICAL CONSIDERATIONS
+
+This project does not attempt to diagnose mental health conditions or infer psychological states of individual players. Fan sentiment is used only as an aggregate external signal. All data collected is publicly available and analyzed for academic purposes.
+
+
+DATA ACCESSIBILITY AND REPRODUCIBILITY
+
+- Structured data is stored locally in CSV format and can be regenerated from Cricsheet sources.
+- YouTube data collection is reproducible using documented API queries and scripts included in the repository.
+- Raw and processed datasets are saved with clear naming conventions for transparency.
+
+
+SUMMARY
+
+By combining structured IPL performance data with unstructured fan sentiment data, this project establishes a realistic foundation for modeling pressure as a measurable, data-driven concept. This acquisition strategy enables later analysis to explore how emotional volatility in the external environment may relate to increased performance uncertainty.
+
