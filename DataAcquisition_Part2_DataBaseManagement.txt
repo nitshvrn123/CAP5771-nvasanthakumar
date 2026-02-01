@@ -1,0 +1,51 @@
+DATA ACQUISITION PART II — DATABASE MANAGEMENT PLAN (Reflection)
+
+Project: Quantifying Performance Risk in Cricket Using Match Pressure and Fan Sentiment
+
+1) STORAGE GOAL
+The purpose of the database is to store structured match outcomes and unstructured fan sentiment signals
+in a consistent relational format so that analysis and modeling can be reproduced from raw inputs.
+
+2) TABLES NEEDED AND WHY
+A) matches
+- One row per match.
+- Stores match context (date, venue, teams) and a stage_bucket field that captures match importance
+  (league vs playoffs vs final).
+
+B) players
+- One row per player.
+- Stores player_name as the main identifier to connect with match-level player performance.
+
+C) player_match_batting
+- One row per player per match.
+- Stores performance outcomes such as runs, balls, strike rate, and dismissal.
+- Links to matches using match_id and links to players using player_name.
+- This table supports risk metrics such as P(<10 runs) and volatility under pressure.
+
+D) youtube_comments
+- One row per YouTube comment.
+- Stores raw text + metadata + NLP sentiment outputs.
+- A stage field is used to group comments by pressure context (final/playoffs/other_pressure).
+
+3) HOW TABLES CONNECT
+matches.match_id  → player_match_batting.match_id  (one-to-many)
+players.player_name → player_match_batting.player_name (one-to-many)
+
+YouTube comments are not directly tied to a specific match_id in Milestone 1.
+Instead, they are connected to the cricket dataset through the shared “pressure stage” concept:
+stage_bucket in matches/player_match_batting aligns with stage in youtube_comments.
+
+4) HOW UNSTRUCTURED DATA WILL BE HANDLED
+The unstructured fan text (YouTube comments) will be stored in SQL for reproducibility.
+Text will be processed using NLP sentiment analysis, producing:
+- sentiment score
+- sentiment_bin category
+These will then be aggregated into pressure indicators such as:
+- comment volume
+- mean sentiment
+- sentiment volatility
+- negative rate
+
+5) NEXT STEP THIS WEEK
+Implement the schema in SQLite, load the cleaned CSV outputs into tables, and generate a simple schema
+diagram image showing table relationships for Milestone 1.

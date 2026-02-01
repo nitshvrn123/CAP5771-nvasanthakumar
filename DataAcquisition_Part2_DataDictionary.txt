@@ -1,0 +1,108 @@
+DATA ACQUISITION PART II — DATA DICTIONARY (Version 1)
+
+Project: Quantifying Performance Risk in Cricket Using Match Pressure and Fan Sentiment
+
+This dictionary defines the first set of variables that will be stored in a relational database for Milestone 1.
+Sources include structured IPL match data and unstructured YouTube comments aggregated into pressure indicators.
+
+
+TABLE: matches
+
+match_id (INTEGER, Primary Key)
+- Unique match identifier.
+
+match_date (DATE)
+- Date the match was played.
+
+season (INTEGER)
+- Year/season derived from match_date.
+
+venue (TEXT)
+- Match venue/stadium.
+
+team1 (TEXT)
+- First team name.
+
+team2 (TEXT)
+- Second team name.
+
+stage_bucket (TEXT)
+- Pressure stage category: league / playoffs / final.
+
+TABLE: players
+
+player_name (TEXT, Primary Key)
+- Player name as used in match data.
+
+TABLE: player_match_batting
+
+pm_id (INTEGER, Primary Key)
+- Unique row id for player-match record.
+
+match_id (INTEGER, Foreign Key -> matches.match_id)
+- Match identifier.
+
+player_name (TEXT, Foreign Key -> players.player_name)
+- Batter/player name.
+
+runs (INTEGER)
+- Runs scored by player in that match.
+
+balls (INTEGER)
+- Balls faced by player in that match.
+
+out (INTEGER: 0/1)
+- 1 if dismissed, 0 otherwise.
+
+strike_rate (REAL)
+- 100 * runs / balls.
+
+TABLE: youtube_comments
+
+comment_id (TEXT, Primary Key)
+- Unique id for each comment (YouTube comment id if available; otherwise generated/hash).
+
+comment_text (TEXT)
+- Raw comment text.
+
+comment_published_at (DATETIME)
+- Timestamp of comment.
+
+like_count (INTEGER)
+- Number of likes (proxy for engagement).
+
+query_used (TEXT)
+- Search query used to discover the video.
+
+stage (TEXT)
+- Stage label inferred from query context: final / playoffs / other_pressure.
+
+sentiment (REAL)
+- NLP sentiment score for the comment (e.g., VADER compound score).
+
+sentiment_bin (TEXT)
+- Sentiment category derived from sentiment: negative / neutral / positive.
+
+DERIVED (FEATURE TABLE): pressure_stage_agg
+
+stage (TEXT)
+- final / playoffs / other_pressure
+
+n_comments (INTEGER)
+- Number of comments in that stage.
+
+mean_sentiment (REAL)
+- Average sentiment for stage.
+
+sentiment_volatility (REAL)
+- Standard deviation of sentiment for stage.
+
+neg_rate (REAL)
+- Fraction of comments labeled negative.
+
+pos_rate (REAL)
+- Fraction of comments labeled positive.
+
+Notes:
+- Player-level linking from comments may be added later (optional extension).
+- Milestone 1 focuses on storage + exploration readiness.
