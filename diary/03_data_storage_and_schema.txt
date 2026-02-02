@@ -1,0 +1,68 @@
+DIARY ENTRY: DATA STORAGE AND DATABASE SCHEMA
+
+PROJECT CONTEXT:
+At this stage of the project, the focus shifted from data collection to organizing the acquired data in a structured and reproducible way. Because the project combines structured cricket performance data with unstructured fan sentiment data, a relational database design was necessary to explicitly represent how these data sources connect.
+
+--------------------------------------------------
+
+DATABASE CHOICE:
+A relational SQLite database was selected for this project. SQLite is lightweight, portable, and well-suited for analytical workflows where multiple related tables must be queried together.
+
+--------------------------------------------------
+
+CORE STRUCTURED TABLES (CRICKET DATA):
+
+1. matches
+Primary Key: match_id  
+Stores match-level metadata including date, venue, season, match type, and a derived stage bucket (league, playoffs, final). This table provides the temporal and contextual anchor for the entire project.
+
+2. players
+Primary Key: player_name  
+A reference table used to standardize player identities across all performance records.
+
+3. player_match_batting
+Primary Key: pm_id  
+Foreign Keys:
+- match_id → matches.match_id
+- player_name → players.player_name  
+
+Stores player-level batting outcomes for each match, including runs, balls faced, dismissal status, and strike rate. This table is the primary source for analyzing performance variability and risk.
+
+--------------------------------------------------
+
+UNSTRUCTURED MEDIA TABLES (YOUTUBE DATA):
+
+4. youtube_videos
+Primary Key: video_id  
+Stores metadata for YouTube videos used to collect fan reactions. Fields include title, channel, publication date, query used, inferred match stage, team mentions, and a pressure score derived from keywords.
+
+5. youtube_comments
+Primary Key: comment_id  
+Foreign Key:
+- video_id → youtube_videos.video_id  
+
+Stores individual fan comments along with engagement metrics and NLP-derived sentiment scores. Raw text is preserved to allow future re-analysis.
+
+--------------------------------------------------
+
+MATCH–MEDIA LINKING STRATEGY:
+
+6. match_media_links
+Primary Key: link_id  
+Foreign Keys:
+- match_id → matches.match_id
+- video_id → youtube_videos.video_id  
+
+This table explicitly links YouTube videos to cricket matches using inferred metadata such as match date proximity, team mentions, and keyword overlap. A confidence score records the reliability of each linkage.
+
+--------------------------------------------------
+
+HANDLING UNSTRUCTURED DATA:
+Fan comments are stored alongside sentiment scores to avoid repeated NLP computation. Aggregate pressure metrics (volume, mean sentiment, volatility) will be derived using SQL queries and feature engineering pipelines.
+
+--------------------------------------------------
+
+REFLECTION:
+Designing this schema clarified how external pressure signals can be aligned with objective performance outcomes. Explicit linking tables were essential to preserve interpretability and avoid incorrect assumptions about how fan reactions map to matches.
+
+This database structure now supports exploratory analysis, interpretable modeling, and future machine learning extensions.
