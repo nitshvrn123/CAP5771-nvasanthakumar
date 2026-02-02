@@ -1,0 +1,3 @@
+02/02/2026
+  Nitishwar, you are doing a great job keeping up with the project. My main comment today is that the current db schema does not match the youtube videos with the match, which from the problem formulation seems critical. It is possible that I am missing something here. However, I would encourage you to check
+  if there is a need to come up with a way to match these tables. Keep it up! you are doing a great job.
