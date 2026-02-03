@@ -1,65 +1,121 @@
-DIARY ENTRY: DATA ACQUISITION (SOURCES AND RELEVANCE)
 
-PROJECT CONTEXT:
-The objective of this project is to study whether external pressure signals are associated with increased variability and uncertainty in cricket player performance. To support this goal, I acquired both structured match-performance data and unstructured fan-generated text data. This combination allows pressure to be modeled using observable signals while grounding the analysis in objective outcomes.
+📘 DIARY ENTRY: DATA ACQUISITION (SOURCES AND RELEVANCE)
 
+PROJECT CONTEXT
+
+The objective of this project is to study whether external pressure signals are associated with increased performance variability and risk in professional cricket players. Rather than predicting average performance, the project focuses on uncertainty outcomes such as low scores, volatility, and failure rates under pressure.
+
+To support this objective, the project integrates:
+	•	Structured cricket performance data (objective outcomes)
+	•	Unstructured fan-generated text data (external emotional pressure)
+
+This combination allows pressure to be operationalized using observable, reproducible data sources.
+
+⸻
 
 STRUCTURED DATA: CRICKET MATCH AND PLAYER PERFORMANCE
 
-Source:
+Source
+
 Cricsheet (https://cricsheet.org)
 
-Description:
-The structured dataset consists of ball-by-ball Indian Premier League (IPL) match data spanning seasons from 2008 to 2024. The data is publicly available and widely used for cricket analytics and research.
+Description
 
-Data Components:
-- Match metadata: match ID, date, venue, competition
-- Ball-level records: batter, bowler, runs, extras, dismissals
-- Aggregated player-level metrics: runs scored, balls faced, strike rate, dismissals
+The structured dataset consists of ball-by-ball Indian Premier League (IPL) data spanning 2008–2024. Cricsheet data is publicly available and widely used for cricket analytics and academic research.
 
-Relevance:
-This dataset provides objective and fine-grained measurements of player performance. It enables both average-based analysis and variability-based analysis, which is critical for studying performance risk under pressure.
+Data Components
+	•	Match metadata: match ID, date, season, venue, match type
+	•	Player–match performance records: runs scored, balls faced, strike rate, dismissals
+	•	Derived performance indicators: low-score outcomes, performance variability
 
-Acquisition Method:
-The data was downloaded directly from Cricsheet in YAML and CSV formats. Ball-by-ball records were parsed using Python and aggregated into player–match level datasets suitable for analysis.
+Relevance
 
+This dataset provides objective measurements of player performance. It supports:
+	•	Match-level aggregation
+	•	Player-level risk analysis
+	•	Comparisons across match stages (league vs playoffs vs finals)
+
+This data forms the ground truth for performance outcomes under varying pressure conditions.
+
+Acquisition Method
+
+The data was downloaded directly from Cricsheet in YAML and CSV formats.
+Ball-by-ball records were parsed using Python and aggregated into player–match level datasets suitable for statistical analysis and database storage.
+
+⸻
 
 UNSTRUCTURED DATA: FAN REACTIONS FROM YOUTUBE COMMENTS
 
-Source:
+Source
+
 YouTube Data API v3
 
-Description:
-To capture external pressure signals, fan-generated comments were collected from YouTube videos related to IPL matches. The focus was on high-pressure contexts such as finals, playoffs, eliminators, last-over finishes, and post-match press conferences.
+Description
 
-Query Design:
-Search queries were constructed to emphasize emotionally intense situations rather than specific teams alone. Examples include:
-- IPL final fan reaction
-- IPL playoffs reaction
-- IPL last over thriller reaction
-- IPL captain post match press conference
+To capture external pressure signals, fan-generated comments were collected from YouTube videos related to IPL matches. These comments reflect the emotional intensity surrounding matches and serve as a proxy for public pressure rather than individual psychology.
 
-This ensured broad coverage across teams and match stages.
+Query Design
 
-Scale:
-Approximately 49,000 unique comments were collected after cleaning and deduplication.
+Search queries were intentionally event-focused rather than team-focused to avoid bias toward specific franchises. Examples include:
+	•	IPL final fan reaction
+	•	IPL playoffs reaction
+	•	IPL last over thriller reaction
+	•	IPL captain post match press conference
 
-Relevance:
-Fan comments act as a proxy for the emotional environment surrounding a match. While they do not measure player psychology directly, they capture collective emotional intensity, sentiment volatility, and pressure-related language that can be quantified and analyzed
+Queries were expanded iteratively to include finals, playoffs, and normal league matches to ensure balanced coverage across match stages.
+
+Scale (Updated)
+	•	~118,000 unique fan comments collected after cleaning and deduplication
+	•	~970 unique YouTube videos
+	•	Comments span finals, playoffs, and normal league matches
+
+This represents a significant expansion from the initial dataset and improves robustness and coverage.
+
+Relevance
+
+Fan comments provide measurable external signals such as:
+	•	Sentiment intensity
+	•	Sentiment volatility
+	•	Volume of engagement
+
+These signals are aggregated and used to construct pressure indicators that can be linked to match outcomes. The data is analyzed only at an aggregate level and is not used to infer individual mental health states.
+
+⸻
+
+LINKING UNSTRUCTURED AND STRUCTURED DATA
+
+To align with the project’s problem formulation, YouTube videos were programmatically linked to IPL matches using a reproducible heuristic approach based on:
+	•	Publication date proximity (±14–30 days)
+	•	Match stage consistency (league / playoffs / finals)
+	•	Team mentions inferred from video titles and search queries
+
+A dedicated relational table (match_media_links) records:
+	•	Match ID
+	•	Video ID
+	•	Linking method
+	•	Confidence score
+
+This enables the full analytical chain:
+
+youtube_comments → youtube_videos → match_media_links → matches → player_match
+
+⸻
 
 ETHICAL CONSIDERATIONS
 
-This project does not attempt to diagnose mental health conditions or infer psychological states of individual players. Fan sentiment is used only as an aggregate external signal. All data collected is publicly available and analyzed for academic purposes.
+This project does not attempt to diagnose mental health conditions or infer psychological states of individual players. Fan sentiment is used solely as an external, aggregate pressure proxy. All data collected is publicly available and analyzed strictly for academic purposes.
 
+⸻
 
 DATA ACCESSIBILITY AND REPRODUCIBILITY
+	•	Structured cricket data is stored locally in CSV format and can be regenerated from Cricsheet sources
+	•	YouTube data collection is reproducible using documented API queries and scripts
+	•	A unified SQLite database (ipl_pressure_final_v2.db) integrates all data sources
+	•	Raw and processed datasets are saved with clear naming conventions for transparency
 
-- Structured data is stored locally in CSV format and can be regenerated from Cricsheet sources.
-- YouTube data collection is reproducible using documented API queries and scripts included in the repository.
-- Raw and processed datasets are saved with clear naming conventions for transparency.
-
+⸻
 
 SUMMARY
 
-By combining structured IPL performance data with unstructured fan sentiment data, this project establishes a realistic foundation for modeling pressure as a measurable, data-driven concept. This acquisition strategy enables later analysis to explore how emotional volatility in the external environment may relate to increased performance uncertainty.
+By combining structured IPL performance data with large-scale unstructured fan sentiment data, this project establishes a data-driven foundation for modeling pressure in professional sports. The expanded dataset and explicit database linkage enable rigorous analysis of how external emotional environments may relate to increased performance uncertainty in high-pressure matches.
 
