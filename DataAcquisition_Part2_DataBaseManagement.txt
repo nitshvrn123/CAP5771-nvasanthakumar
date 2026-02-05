@@ -1,102 +1,95 @@
 DIARY ENTRY: DATA ACQUISITION II — DATA STORAGE AND DATABASE SCHEMA
 
-PROJECT CONTEXT:
-This project integrates structured cricket performance data with unstructured fan sentiment data to analyze whether external pressure is associated with increased variability and risk in IPL player performance. To ensure reproducibility and clarity, all data sources are organized into a relational SQL database.
+PROJECT CONTEXT
 
---------------------------------------------------
+At this stage of the project, the focus moved from data collection to organizing the acquired cricket data into a structured, reproducible system. The goal of the project is to study how match context and pressure situations (league vs playoffs vs finals) are associated with performance variability and risk in IPL players, including both batters and bowlers.
 
-DATABASE SYSTEM:
-A relational SQLite database is used because the project contains multiple related entities (matches, players, performances, videos, and comments) that require explicit relationships and structured joins.
+To support this objective, the project uses a relational database design that clearly represents relationships between matches, players, and match-level performance outcomes.
 
---------------------------------------------------
+⸻
 
-STRUCTURED TABLES (CRICKET DATA):
+DATABASE SYSTEM
+
+A SQLite relational database was selected for this project. SQLite is lightweight, portable, and well-suited for analytical workflows where multiple related tables must be queried together. Using a single .db file ensures the analysis is reproducible and easy to share.
+
+⸻
+
+STRUCTURED CRICKET TABLES
 
 TABLE: matches
-Primary Key: match_id
-Fields:
-- match_date
-- season
-- venue
-- match_type
-- stage_bucket (league / playoffs / final)
+Primary Key: id
 
-This table stores match-level metadata and provides the temporal and contextual backbone of the analysis.
+This table stores match-level metadata and provides the contextual anchor for the entire analysis.
+
+Key fields include:
+	•	season
+	•	date
+	•	venue
+	•	match_type
+	•	team1, team2
+	•	winner and result fields
+	•	stage_bucket (league / playoffs / final)
+
+The stage_bucket variable is central to the project, as it operationalizes pressure through match importance rather than subjective interpretation.
+
+⸻
 
 TABLE: players
-Primary Key: player_name
-This reference table standardizes player identities.
+This table stores standardized player identifiers used across all performance records. It ensures consistent naming and avoids duplication when aggregating player-level statistics.
 
-TABLE: player_match_batting
-Primary Key: pm_id
-Foreign Keys:
-- match_id → matches.match_id
-- player_name → players.player_name
+⸻
 
-Fields:
-- runs
-- balls
-- out
-- strike_rate
+TABLE: player_match
+This table stores player-level performance outcomes aggregated at the match level.
 
-This table stores player-level performance outcomes per match and is the primary source for performance variability analysis.
+Key fields include:
+	•	match_id (foreign key → matches.id)
+	•	player
+	•	runs
+	•	balls
+	•	dismissal indicator
+	•	strike_rate
+	•	derived indicators such as low-score outcomes
 
---------------------------------------------------
+This table is the primary source for analyzing:
+	•	performance variability
+	•	risk of failure (e.g., low scores)
+	•	differences between league and high-pressure matches
 
-UNSTRUCTURED MEDIA TABLES (YOUTUBE DATA):
+It enables both match-level and player-level analysis.
 
-TABLE: youtube_videos
-Primary Key: video_id
-Fields:
-- title
-- channel
-- published_at
-- query_used
-- pressure_score
-- stage_inferred
-- team_mentioned
-- match_date_inferred
+⸻
 
-This table stores metadata for YouTube videos used to collect fan reactions.
+RELATIONAL DESIGN AND JOIN STRATEGY
 
-TABLE: youtube_comments
-Primary Key: comment_id
-Foreign Key:
-- video_id → youtube_videos.video_id
+The schema follows a clear relational structure: matches  →  player_match  →  players
 
-Fields:
-- comment_text
-- like_count
-- comment_published_at
-- stage
-- sentiment
-- sentiment_bin
+This design allows:
+	•	aggregation of player performance within matches
+	•	comparison of player behavior across match stages
+	•	extension to future analyses involving bowling metrics or team-level features
 
-This table stores individual fan comments along with NLP-derived sentiment features.
+Foreign key relationships ensure referential integrity and make joins explicit and interpretable.
 
---------------------------------------------------
+⸻
 
-MATCH–MEDIA LINKING TABLE:
+HANDLING DERIVED FEATURES
 
-TABLE: match_media_links
-Primary Key: link_id
-Foreign Keys:
-- match_id → matches.match_id
-- video_id → youtube_videos.video_id
+Derived variables such as:
+	•	low-score indicators
+	•	performance volatility
+	•	match-level averages
 
-Fields:
-- link_method (date window, keyword match)
-- link_confidence (0–1 score)
-- notes
+are not hard-coded into the schema, but computed through SQL queries or pandas pipelines. This keeps the database normalized while preserving analytical flexibility.
 
-This table explicitly links YouTube media to cricket matches, allowing fan sentiment to be aligned with player performance. This resolves the integration gap between unstructured and structured data sources.
+⸻
 
---------------------------------------------------
+REFLECTION
 
-HANDLING UNSTRUCTURED DATA:
-Raw comment text is stored alongside sentiment scores to avoid repeated NLP computation. Aggregate pressure indicators will be derived via SQL queries or feature engineering pipelines.
+Designing the database schema clarified how match context and player performance interact across different pressure situations. Separating match metadata from player-level outcomes ensures the analysis remains interpretable and extensible.
 
---------------------------------------------------
+This database structure now provides a solid foundation for:
+	•	exploratory data analysis
+	•	pressure-aware performance metrics
+	•	future machine learning models predicting performance risk under high-stakes conditions
 
-SUMMARY:
-This database schema integrates cricket performance data and fan sentiment into a single relational structure that supports exploratory analysis, interpretable modeling, and future machine learning extensions.
