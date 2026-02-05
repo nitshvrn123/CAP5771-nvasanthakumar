@@ -1,10 +1,13 @@
+
+⸻
+
 DIARY ENTRY: DATA STORAGE AND DATABASE SCHEMA
 
 PROJECT CONTEXT
 
-At this stage, the project transitioned from raw data acquisition to structured data organization. The goal was to design a database schema that cleanly represents cricket match context and player performance outcomes in a way that supports reproducible analysis of performance variability under pressure.
+At this stage, the project transitioned from raw data acquisition to structured data organization. The goal was to design a database schema that cleanly represents cricket match context and both batting and bowling performance outcomes in a way that supports reproducible analysis of performance variability under pressure.
 
-Because the project focuses exclusively on cricket analytics, the database schema was designed around match-level context and player-level performance, with explicit support for comparisons across different match stages (league, playoffs, finals).
+Because the project focuses exclusively on cricket analytics, the database schema was designed around match-level context and player-level performance, with explicit support for comparisons across different match stages (league, playoffs, finals) and player roles.
 
 ⸻
 
@@ -35,20 +38,19 @@ This table stores match-level metadata for each IPL match, including:
 	•	Toss and result information
 
 A key derived column in this table is:
-	•	stage_bucket
-Categorizes matches into:
+	•	stage_bucket, which categorizes matches into:
 	•	league
 	•	playoffs
 	•	final
 
-This variable is central to the project, as it operationalizes match pressure using competition stage rather than subjective or external indicators.
+This variable operationalizes competitive pressure using tournament structure and is central to the project’s analysis.
 
 The matches table serves as the anchor table for all joins in the database.
 
 ⸻
 
 Table: players
-This table stores unique player identifiers used consistently across performance tables. It provides a clean reference list of players appearing in the dataset.
+This table stores unique player identifiers used consistently across performance tables. It provides a clean reference list of players appearing in the dataset and supports analysis across different player roles (batters, bowlers, all-rounders).
 
 ⸻
 
@@ -58,16 +60,24 @@ This table stores player-level performance aggregated at the match level, with o
 Key fields include:
 	•	Match identifier (match_id)
 	•	Player name
+	•	Batting metrics:
 	•	Runs scored
 	•	Balls faced
 	•	Strike rate
-	•	Dismissal indicators
-	•	Derived performance flags (e.g., low-score outcomes)
+	•	Dismissal indicator
+	•	Bowling metrics (where applicable):
+	•	Overs bowled
+	•	Runs conceded
+	•	Wickets taken
+	•	Economy rate
+
+Derived performance flags (e.g., low-score outcomes) are also included where relevant.
 
 This table is the foundation for:
-	•	Player performance summaries
+	•	Batting and bowling performance summaries
 	•	Risk and variability calculations
 	•	Comparisons between league and high-pressure matches
+	•	Role-agnostic analysis of player performance under pressure
 
 The table is joined to matches using match_id to incorporate match context.
 
@@ -75,21 +85,24 @@ The table is joined to matches using match_id to incorporate match context.
 
 DATABASE RELATIONSHIPS
 
-The core relational structure of the database is:matches (id)
+The core relational structure of the database is:
+matches (id)
    ↓
 player_match (match_id)
 
 This design enables:
 	•	Match-level aggregation of player outcomes
 	•	Player-level analysis across different match stages
+	•	Unified analysis of batting and bowling performance within the same framework
 	•	Clear separation between match context and player performance
 
 ⸻
 
 HANDLING DERIVED FEATURES
 
-Rather than storing every derived statistic directly in the database, the schema stores clean, atomic performance fields (runs, balls, strike rate, dismissals). Derived metrics such as:
+Rather than storing every derived statistic directly in the database, the schema stores clean, atomic performance fields (e.g., runs, balls, wickets, runs conceded). Derived metrics such as:
 	•	Low-score rates
+	•	Bowling economy volatility
 	•	Performance variance
 	•	Pressure impact indices
 
@@ -99,7 +112,4 @@ are computed dynamically using SQL queries and pandas during analysis. This appr
 
 REFLECTION
 
-The most important design decision was to center the schema around match stage as a pressure proxy, using only cricket-intrinsic data. By structuring the database around matches and player_match, the schema cleanly supports reproducible, interpretable analysis of how player performance changes across competition stages.
-
-This design ensures that all conclusions drawn in later stages are grounded in objective match outcomes rather than subjective or external signals, making the project analytically robust and defensible.
-
+The most important design decision was to center the schema around match stage as a pressure proxy, using only cricket-intrinsic data. By structuring the database around matches and a unified player_match table that includes both batting and bowling metrics, the schema supports robust, reproducible analysis of how different types of player performance change across competition stages.
