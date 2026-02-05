@@ -29,11 +29,9 @@ Match-Level Data
 	•	Tournament stage (league, playoffs, final)
 
 Player-Level Performance Data
-	•	Runs scored
-	•	Balls faced
-	•	Strike rate
-	•	Dismissal indicator
-	•	Match participation
+ • Batting outcomes: runs scored, balls faced, strike rate, dismissal indicator
+ • Bowling outcomes: overs bowled, runs conceded, wickets taken (available from ball-by-ball records)
+ • Match participation
 
 Both batting and bowling participants are retained in the dataset, enabling analysis across player roles and supporting future extensions of the project.
 
