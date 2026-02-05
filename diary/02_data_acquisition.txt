@@ -1,121 +1,82 @@
+DIARY ENTRY: DATA ACQUISITION (SOURCES AND RELEVANCE)
 
- DIARY ENTRY: DATA ACQUISITION (SOURCES AND RELEVANCE)
+Project Objective
 
-PROJECT CONTEXT
+The goal of this project is to analyze how competitive pressure affects performance variability and risk in professional cricket. Rather than focusing on predicting average outcomes, the analysis emphasizes uncertainty-related performance measures such as low-score frequency, variability, and inconsistency across different match contexts.
 
-The objective of this project is to study whether external pressure signals are associated with increased performance variability and risk in professional cricket players. Rather than predicting average performance, the project focuses on uncertainty outcomes such as low scores, volatility, and failure rates under pressure.
-
-To support this objective, the project integrates:
-	•	Structured cricket performance data (objective outcomes)
-	•	Unstructured fan-generated text data (external emotional pressure)
-
-This combination allows pressure to be operationalized using observable, reproducible data sources.
+Pressure is operationalized using tournament structure and match stage (league, playoffs, finals), which provides a clear, objective, and reproducible proxy for competitive pressure.
 
 ⸻
 
-STRUCTURED DATA: CRICKET MATCH AND PLAYER PERFORMANCE
+Primary Data Source
 
-Source
+Cricsheet
+https://cricsheet.org
 
-Cricsheet (https://cricsheet.org)
-
-Description
-
-The structured dataset consists of ball-by-ball Indian Premier League (IPL) data spanning 2008–2024. Cricsheet data is publicly available and widely used for cricket analytics and academic research.
-
-Data Components
-	•	Match metadata: match ID, date, season, venue, match type
-	•	Player–match performance records: runs scored, balls faced, strike rate, dismissals
-	•	Derived performance indicators: low-score outcomes, performance variability
-
-Relevance
-
-This dataset provides objective measurements of player performance. It supports:
-	•	Match-level aggregation
-	•	Player-level risk analysis
-	•	Comparisons across match stages (league vs playoffs vs finals)
-
-This data forms the ground truth for performance outcomes under varying pressure conditions.
-
-Acquisition Method
-
-The data was downloaded directly from Cricsheet in YAML and CSV formats.
-Ball-by-ball records were parsed using Python and aggregated into player–match level datasets suitable for statistical analysis and database storage.
+Cricsheet is a publicly available and widely used repository of structured ball-by-ball cricket data. The dataset covers Indian Premier League (IPL) matches from 2008 to 2024, making it suitable for longitudinal and comparative analysis.
 
 ⸻
 
-UNSTRUCTURED DATA: FAN REACTIONS FROM YOUTUBE COMMENTS
+Data Description
 
-Source
+The acquired dataset includes detailed ball-by-ball information that was aggregated into player–match level records. Key components include:
 
-YouTube Data API v3
-
-Description
-
-To capture external pressure signals, fan-generated comments were collected from YouTube videos related to IPL matches. These comments reflect the emotional intensity surrounding matches and serve as a proxy for public pressure rather than individual psychology.
-
-Query Design
-
-Search queries were intentionally event-focused rather than team-focused to avoid bias toward specific franchises. Examples include:
-	•	IPL final fan reaction
-	•	IPL playoffs reaction
-	•	IPL last over thriller reaction
-	•	IPL captain post match press conference
-
-Queries were expanded iteratively to include finals, playoffs, and normal league matches to ensure balanced coverage across match stages.
-
-Scale (Updated)
-	•	~118,000 unique fan comments collected after cleaning and deduplication
-	•	~970 unique YouTube videos
-	•	Comments span finals, playoffs, and normal league matches
-
-This represents a significant expansion from the initial dataset and improves robustness and coverage.
-
-Relevance
-
-Fan comments provide measurable external signals such as:
-	•	Sentiment intensity
-	•	Sentiment volatility
-	•	Volume of engagement
-
-These signals are aggregated and used to construct pressure indicators that can be linked to match outcomes. The data is analyzed only at an aggregate level and is not used to infer individual mental health states.
-
-⸻
-
-LINKING UNSTRUCTURED AND STRUCTURED DATA
-
-To align with the project’s problem formulation, YouTube videos were programmatically linked to IPL matches using a reproducible heuristic approach based on:
-	•	Publication date proximity (±14–30 days)
-	•	Match stage consistency (league / playoffs / finals)
-	•	Team mentions inferred from video titles and search queries
-
-A dedicated relational table (match_media_links) records:
+Match-Level Data
 	•	Match ID
-	•	Video ID
-	•	Linking method
-	•	Confidence score
+	•	Date and season
+	•	Venue
+	•	Match type
+	•	Tournament stage (league, playoffs, final)
 
-This enables the full analytical chain:
+Player-Level Performance Data
+	•	Runs scored
+	•	Balls faced
+	•	Strike rate
+	•	Dismissal indicator
+	•	Match participation
 
-youtube_comments → youtube_videos → match_media_links → matches → player_match
-
-⸻
-
-ETHICAL CONSIDERATIONS
-
-This project does not attempt to diagnose mental health conditions or infer psychological states of individual players. Fan sentiment is used solely as an external, aggregate pressure proxy. All data collected is publicly available and analyzed strictly for academic purposes.
-
-⸻
-
-DATA ACCESSIBILITY AND REPRODUCIBILITY
-	•	Structured cricket data is stored locally in CSV format and can be regenerated from Cricsheet sources
-	•	YouTube data collection is reproducible using documented API queries and scripts
-	•	A unified SQLite database (ipl_pressure_final_v2.db) integrates all data sources
-	•	Raw and processed datasets are saved with clear naming conventions for transparency
+Both batting and bowling participants are retained in the dataset, enabling analysis across player roles and supporting future extensions of the project.
 
 ⸻
 
-SUMMARY
+Derived Variables
 
-By combining structured IPL performance data with large-scale unstructured fan sentiment data, this project establishes a data-driven foundation for modeling pressure in professional sports. The expanded dataset and explicit database linkage enable rigorous analysis of how external emotional environments may relate to increased performance uncertainty in high-pressure matches.
+To support the study of performance risk, additional variables were derived from the raw data:
+	•	Low-score indicator (e.g., runs < 10)
+	•	Player-level performance variability
+	•	Match-level aggregates such as average runs and low-score rates
 
+These derived features allow the project to quantify performance uncertainty rather than relying solely on average outcomes.
+
+⸻
+
+Data Acquisition Process
+	•	Raw IPL match data was downloaded from Cricsheet in YAML format
+	•	Python scripts were used to parse ball-by-ball records
+	•	Parsed data was aggregated into player–match level CSV files
+	•	The processed datasets were stored in a structured format suitable for database integration and statistical analysis
+
+⸻
+
+Relevance to the Project
+
+This dataset provides objective, reproducible ground-truth measurements of player performance under varying competitive conditions. It directly supports:
+	•	Comparison of performance across match stages
+	•	Analysis of performance risk under high-pressure matches
+	•	Player-level and match-level exploratory analysis
+
+By relying solely on structured cricket data and tournament context, the project avoids speculative assumptions and maintains a clear analytical scope.
+
+⸻
+
+Data Accessibility and Reproducibility
+	•	All processed datasets are stored locally in CSV format
+	•	Data can be regenerated from original Cricsheet sources using documented scripts
+	•	A unified SQLite database integrates all tables for reproducibility
+	•	File naming conventions and repository structure ensure transparency
+
+⸻
+
+Summary
+
+The Cricsheet IPL dataset provides a high-quality, structured foundation for analyzing performance variability under competitive pressure. Its completeness, temporal coverage, and detailed granularity make it well-suited for studying how match context influences player performance risk in professional cricket.
