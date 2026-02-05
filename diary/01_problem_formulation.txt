@@ -1,9 +1,22 @@
-Week 1
+Problem Formulation
+In professional cricket, performance is commonly summarized using aggregate statistics such as batting average, strike rate, economy rate, or wickets. While these metrics describe overall ability, they do not explicitly capture how performance changes under high-stakes situations. In the IPL, match pressure varies strongly by stage: league matches allow recovery over a long season, while playoffs and finals create elimination risk, greater scrutiny, and higher competitive intensity.
 
-At the beginning of the project, I explored multiple problem ideas involving data science and social media analysis. My initial interest was in understanding how psychological pressure and public reactions might affect individuals. While early ideas considered mental health detection from social media text, I recognized that such approaches raise ethical and interpretive challenges related to diagnosis and scope.
+This project investigates whether high-pressure match stages (playoffs + finals) are associated with higher performance risk and variability for players compared to league matches. The focus is not on predicting match winners, but on quantifying how pressure shifts the distribution of individual performance for both batters and bowlers.
 
-To address these concerns, I refined the project toward studying performance under pressure using observable, non-diagnostic signals. Drawing from my interest in cricket analytics, I reframed the problem to focus on whether external pressure signals—derived from match context and fan reactions—are associated with increased uncertainty and variability in player performance.
+Using structured IPL match and player-level records, the project builds stage-aware performance profiles:
 
-The project uses structured cricket match data alongside unstructured fan text from YouTube comments. Machine learning methods are employed to transform these unstructured comments into quantitative pressure indicators, such as sentiment intensity and volume, which can be integrated with historical performance data.
+Batting outcomes (examples)
+	•	Runs scored per match/innings
+	•	Probability of low score (e.g., runs < 10)
+	•	Variance/volatility in runs
+	•	Strike rate changes under pressure
 
-Rather than predicting exact outcomes, the project aims to evaluate how pressure-related features affect the risk profile of a player’s performance. By the end of this phase, I finalized a problem formulation centered on quantifying performance risk under pressure using machine learning and publicly available data, while explicitly avoiding any attempt to diagnose mental health conditions.
+Bowling outcomes (examples)
+	•	Wickets per match/innings
+	•	Economy rate and/or runs conceded per over
+	•	Variance/volatility in economy or runs conceded
+	•	Probability of “high-cost spell” (e.g., economy above a threshold)
+
+Players are compared across league vs pressure matches to quantify how performance shifts under pressure, and whether certain players remain stable (“pressure-resilient”) while others become riskier (“pressure-sensitive”). The project also aims to create an interpretable Pressure Impact Index for batting and bowling that summarizes the magnitude of change in risk-related metrics from league to playoffs/finals
+
+This project emphasizes interpretability and reproducibility, using only match context and historical IPL performance data. The goal is to provide a data-driven framework for understanding how pressure relates to performance risk in elite cricket.
