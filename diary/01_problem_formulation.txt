@@ -1,22 +1,23 @@
 Problem Formulation
-In professional cricket, performance is commonly summarized using aggregate statistics such as batting average, strike rate, economy rate, or wickets. While these metrics describe overall ability, they do not explicitly capture how performance changes under high-stakes situations. In the IPL, match pressure varies strongly by stage: league matches allow recovery over a long season, while playoffs and finals create elimination risk, greater scrutiny, and higher competitive intensity.
 
-This project investigates whether high-pressure match stages (playoffs + finals) are associated with higher performance risk and variability for players compared to league matches. The focus is not on predicting match winners, but on quantifying how pressure shifts the distribution of individual performance for both batters and bowlers.
+In professional cricket, performance is commonly summarized using aggregate statistics such as batting average, strike rate, economy rate, or wickets. While these metrics describe overall ability, they do not explicitly capture how performance changes under high-stakes situations. In the IPL, match pressure varies strongly by tournament stage: league matches allow recovery over a long season, while playoffs and finals introduce elimination risk, heightened scrutiny, and increased competitive intensity.
+
+This project investigates whether later tournament stages (playoffs and finals) are associated with higher performance risk and variability for players compared to league matches. Rather than collapsing all non-league matches into a single category, the analysis treats league, playoffs, and finals as distinct stages to preserve tournament structure and enable fine-grained comparison of performance under increasing pressure. The focus is not on predicting match winners, but on quantifying how pressure shifts the distribution of individual performance for both batters and bowlers.
 
 Using structured IPL match and player-level records, the project builds stage-aware performance profiles:
 
 Batting outcomes (examples)
 	•	Runs scored per match/innings
-	•	Probability of low score (e.g., runs < 10)
+	•	Probability of a low score (e.g., runs < 10)
 	•	Variance/volatility in runs
-	•	Strike rate changes under pressure
+	•	Strike rate differences across stages
 
 Bowling outcomes (examples)
 	•	Wickets per match/innings
 	•	Economy rate and/or runs conceded per over
 	•	Variance/volatility in economy or runs conceded
-	•	Probability of “high-cost spell” (e.g., economy above a threshold)
+	•	Probability of a high-cost spell (e.g., economy above a defined threshold)
 
-Players are compared across league vs pressure matches to quantify how performance shifts under pressure, and whether certain players remain stable (“pressure-resilient”) while others become riskier (“pressure-sensitive”). The project also aims to create an interpretable Pressure Impact Index for batting and bowling that summarizes the magnitude of change in risk-related metrics from league to playoffs/finals
+Players are compared across league, playoff, and final matches to quantify how performance risk evolves as competitive pressure increases. This framework allows identification of players who remain stable (“pressure-resilient”) as well as those whose performance becomes riskier (“pressure-sensitive”) at later stages. To summarize these effects, the project constructs interpretable Pressure Impact Indices for batting and bowling that capture stage-specific changes in risk-related metrics relative to league performance.
 
-This project emphasizes interpretability and reproducibility, using only match context and historical IPL performance data. The goal is to provide a data-driven framework for understanding how pressure relates to performance risk in elite cricket.
+This project emphasizes interpretability and reproducibility, relying solely on match context and historical IPL performance data. The goal is to provide a transparent, data-driven framework for understanding how competitive pressure relates to performance risk in elite cricket.
