@@ -82,6 +82,8 @@ This table enables analysis of:
 
 ⸻
 
+No explicit primary key is defined for this table in SQLite; each row represents a unique bowler–match spell identified in practice by (match_id, bowler).
+
 RELATIONAL DESIGN AND JOIN STRATEGY
 
 The schema follows a clear relational structure: matches  →  player_match_batting  →  players
