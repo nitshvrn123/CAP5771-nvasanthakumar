@@ -5,14 +5,15 @@ Project: Quantifying Performance Risk in Professional Cricket Across Match Stage
 This data dictionary defines the core variables stored in the relational database for Milestone 1.
 All data is derived exclusively from structured cricket match and player performance records.
 
-The goal of this database is to support analysis of performance variability and risk for both batters and bowlers under different match pressure stages (league, playoffs, finals).
+The goal of this database is to support analysis of performance variability and risk for both batters and bowlers under different match pressure stages (league, playoffs, final).
 
 ⸻
 
 TABLE: matches
 
-id (INTEGER, Primary Key)
+id (INTEGER)
 	•	Unique identifier for each IPL match.
+	•	Primary Key.
 
 date (DATE)
 	•	Date on which the match was played.
@@ -30,10 +31,10 @@ team2 (TEXT)
 	•	Second competing team.
 
 match_type (TEXT)
-	•	Match format (league match, qualifier, eliminator, final).
+	•	Match format/category (e.g., league match, qualifier, eliminator, final).
 
 stage_bucket (TEXT)
-	•	Derived match pressure category:
+	•	Derived match stage used as an objective pressure proxy:
 	•	league
 	•	playoffs
 	•	final
@@ -48,8 +49,10 @@ result (TEXT)
 
 TABLE: players
 
-player_name (TEXT, Primary Key)
+player_name (TEXT)
 	•	Standardized player name used consistently across all performance records.
+
+Note: No explicit primary key is enforced in SQLite; player names act as stable identifiers in practice.
 
 This table serves as a reference table for all player roles, including:
 	•	Specialist batters
@@ -58,26 +61,24 @@ This table serves as a reference table for all player roles, including:
 
 ⸻
 
-TABLE: player_match
+TABLE: player_match_batting
 
-This table stores player–match level performance outcomes for both batting and bowling roles.
+This table stores batting-only player–match performance outcomes
+(one row per batter per match).
 
-match_id (INTEGER, Foreign Key → matches.id)
+match_id (INTEGER)
 	•	Match identifier linking performance to match context.
+	•	Foreign key → matches.id.
 
-player (TEXT, Foreign Key → players.player_name)
-	•	Player involved in the match.
-
-Batting Performance Fields
+player (TEXT)
+	•	Batter name.
+	•	Foreign key → players.player_name.
 
 runs (INTEGER)
 	•	Runs scored by the player in the match.
 
 balls (INTEGER)
 	•	Balls faced by the player.
-
-out (INTEGER: 0/1)
-	•	1 if dismissed, 0 otherwise.
 
 strike_rate (REAL)
 	•	Batting strike rate: (runs / balls) × 100.
@@ -88,12 +89,32 @@ low_score (INTEGER: 0/1)
 	•	0 otherwise
 	•	Used as a proxy for batting failure risk.
 
-Bowling Performance Fields (Current or Extendable)
+stage_bucket (TEXT)
+	•	Match stage category inherited from matches.
 
-(Some may already exist or will be derived in later milestones)
+Primary Key: None explicitly defined (SQLite).
+Each row represents a unique player–match batting record in practice.
 
-overs_bowled (REAL)
-	•	Number of overs bowled by the player.
+⸻
+
+TABLE: player_match_bowling
+
+This table stores bowling-only player–match performance outcomes
+(one row per bowler per match).
+
+match_id (INTEGER)
+	•	Match identifier linking performance to match context.
+	•	Foreign key → matches.id.
+
+bowler (TEXT)
+	•	Bowler name.
+	•	Foreign key → players.player_name.
+
+balls (INTEGER)
+	•	Balls delivered by the bowler.
+
+overs (REAL)
+	•	Overs bowled (balls / 6).
 
 runs_conceded (INTEGER)
 	•	Runs conceded while bowling.
@@ -101,42 +122,38 @@ runs_conceded (INTEGER)
 wickets (INTEGER)
 	•	Number of wickets taken.
 
-economy_rate (REAL)
+economy (REAL)
 	•	Runs conceded per over.
 
-bowling_impact_flag (INTEGER: 0/1) (derived)
-	•	Indicator for high-impact bowling performances (e.g., multiple wickets or low economy).
+dot_ball_rate (REAL)
+	•	Proportion of dot balls delivered.
 
-Context Fields
-
-date (DATE)
-	•	Match date (duplicated for convenience).
-
-season (INTEGER)
-	•	Season/year of the match.
-
-venue (TEXT)
-	•	Match venue.
+strike_rate_balls_per_wicket (REAL)
+	•	Bowling strike rate measured as balls per wicket.
 
 stage_bucket (TEXT)
-	•	Match pressure category inherited from matches.
+	•	Match stage category inherited from matches.
+
+Primary Key: None explicitly defined (SQLite).
+Each row represents a unique bowler–match spell, identified in practice by
+(match_id, bowler).
 
 ⸻
 
-DERIVED ANALYSIS FEATURES (NOT STORED AS RAW TABLES)
+DERIVED ANALYSIS FEATURES
 
-Computed during EDA and modeling:
+(Computed during EDA; not stored as raw tables)
 
-Batting Risk Metrics
-	•	avg_runs
+Batting risk metrics
+	•	avg_runs (by stage)
 	•	low_score_rate
 	•	run_variance
 	•	pressure_impact_index (batting)
 
-Bowling Risk Metrics
+Bowling risk metrics
 	•	avg_economy
-	•	wicket_variance
-	•	high_concession_rate
+	•	economy_variance
+	•	high_cost_spell_rate
 	•	pressure_impact_index (bowling)
 
 Labels
@@ -146,23 +163,27 @@ pressure_label
 	•	More risky under pressure
 	•	High pressure drop
 
+Note: Improvements under pressure are clipped at zero in summary indices;
+a value of zero represents stability, not missing data.
+
 ⸻
 
 NOTES AND SCOPE
 	•	Milestone 1 focuses on:
-	•	Data acquisition
-	•	Database design
-	•	Exploration readiness
-	•	Both batting and bowling roles are supported at the schema level.
+	•	data acquisition
+	•	database design
+	•	exploration readiness
+	•	Batting and bowling outcomes are stored in separate tables to preserve role-specific interpretation.
 	•	All variables are derived from objective match outcomes, not psychological inference.
 	•	Later milestones may:
-	•	Separate batting vs bowling models
-	•	Introduce role-specific pressure metrics
-	•	Extend to team-level pressure dynamics
+	•	refine role-specific pressure metrics
+	•	introduce uncertainty quantification
+	•	extend analysis to team-level dynamics
 
 ⸻
 
 SUMMARY
 
 This data dictionary defines a cricket-only, role-aware relational schema that supports exploratory analysis of performance risk for both batters and bowlers across match stages.
-It provides a defensible, reproducible foundation for advanced analytics and machine learning without relying on external or subjective data sources.
+It provides a defensible and reproducible foundation for advanced analytics without relying on external or subjective data sources.
+
