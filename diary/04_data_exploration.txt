@@ -1,0 +1,47 @@
+DIARY ENTRY: DATA EXPLORATION
+
+At this stage of the project, exploratory analysis was conducted to understand the structure,
+content, and limitations of the IPL performance dataset before any modeling or data
+transformation.
+
+The exploration focused on player–match level data for batting and bowling, filtered to
+the three tournament stages relevant to the study: league, playoffs, and finals. Only
+features necessary for stage-aware performance risk analysis were retained.
+
+DATA PREVIEW
+
+The dataset was previewed using standard inspection methods (.head(), .info(), .describe())
+directly in the project notebook. This confirmed that batting and bowling performance metrics
+were stored at the appropriate granularity, with numeric fields such as runs, balls, economy,
+and wickets showing reasonable ranges and distributions.
+
+Stage distribution counts revealed a strong imbalance across match stages, with league matches
+comprising the majority of observations and finals representing a much smaller subset. This
+imbalance was noted as an important consideration for interpretation rather than corrected
+during exploration.
+
+ISSUE IDENTIFICATION
+
+Several potential data issues were identified and documented:
+
+• Duplicate records were checked and none were found. Player–match records are effectively
+  unique based on the combination of match_id and player (for batting) or match_id and bowler
+  (for bowling).
+
+• Missing values were observed primarily in bowling-related metrics such as strike rate per
+  wicket. These occur when a bowler does not take a wicket in a match and reflect structural
+  characteristics of cricket data rather than data quality errors.
+
+• Stage labels were standardized using the stage_bucket variable, which cleanly categorizes
+  matches into league, playoffs, and final. No inconsistent categories were observed after
+  filtering.
+
+• Extreme performances (e.g., very high scores or expensive bowling spells) were retained.
+  Because the project focuses on performance risk and variability, such extremes are treated
+  as informative signals rather than noise.
+
+No data issues were corrected at this stage. All findings were recorded to guide future data
+wrangling and modeling decisions.
+
+The project notebook serves as the primary and authoritative record of exploratory analysis,
+including descriptive statistics, missingness reports, and visual summaries.
