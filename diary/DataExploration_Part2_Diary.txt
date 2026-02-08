@@ -1,0 +1,39 @@
+DIARY ENTRY: DATA EXPLORATION — PART II (ISSUE IDENTIFICATION)
+
+This section documents potential data issues identified during exploratory analysis. The goal is to record and understand these issues rather than resolve them at this stage.
+
+### Duplicates and Uniqueness
+
+No exact duplicate records were observed in the batting or bowling datasets.
+Although no explicit primary key is enforced in SQLite, player–match records are effectively unique by:
+- (match_id, player) for batting
+- (match_id, bowler) for bowling
+
+This definition of uniqueness is consistent with the analytical goal of studying per-match performance.
+
+### Missing Values
+
+Missing values were observed primarily in bowling-related metrics such as strike_rate_balls_per_wicket.
+These occur when a bowler does not take a wicket in a match and therefore reflect structural characteristics of cricket data rather than data errors.
+
+Missingness in batting metrics was minimal after filtering to relevant match stages.
+
+### Standardization Issues
+
+Match stages were standardized using the `stage_bucket` variable, which categorizes matches into league, playoffs, and final.
+After filtering, no inconsistent or unexpected stage labels were observed.
+Numeric performance variables were confirmed to have appropriate data types.
+
+### Noise vs Outliers
+
+Extreme performances (e.g., very high run totals or expensive bowling spells) were retained rather than removed.
+Because the project focuses on performance risk and variability, such extremes are treated as informative signals rather than noise.
+
+Final-stage matches are relatively rare, which introduces higher uncertainty in estimates for that stage. This imbalance is documented and handled analytically rather than corrected during exploration.
+
+### Open Questions for Stakeholders
+
+- Should abandoned or no-result matches be excluded from performance risk analysis?
+- Is the current mapping of qualifiers and eliminators into the playoffs category appropriate?
+- Should minimum appearance thresholds be enforced separately for finals due to small sample size?
+- Are super-over performances included, and should they be treated differently?

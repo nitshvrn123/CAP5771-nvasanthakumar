@@ -1,0 +1,35 @@
+DIARY ENTRY: DATA EXPLORATION — PART I (DATA PREVIEW)
+
+At this stage, a focused analysis dataset was constructed by selecting only the tables and variables relevant to the project objective: analyzing how competitive pressure (league, playoffs, finals) relates to performance risk and variability in IPL players.
+
+### Features Kept for Data Preview
+
+For batting analysis, the following features were retained:
+- match_id (link to match context)
+- player
+- runs and balls faced (core performance outcomes)
+- strike_rate
+- low_score indicator (runs < 10)
+- stage_bucket (league / playoffs / final)
+- season, date, venue (contextual variables)
+
+For bowling analysis, the following features were retained:
+- match_id
+- bowler
+- overs, runs_conceded, wickets
+- economy
+- dot_ball_rate
+- strike_rate_balls_per_wicket
+- stage_bucket
+- season, date, venue
+
+Only player–match level data was retained, as this is the appropriate granularity for studying performance variability under pressure.
+
+### Descriptive Preview
+
+The datasets were previewed using `.head()`, `.info()`, and `.describe()` to verify structure, data types, and value ranges.  
+Summary statistics confirmed reasonable ranges for batting and bowling metrics and showed expected variation across match stages.
+
+Missingness was quantified using a percentage-based report. Most missing values were associated with non-participation (e.g., bowlers with no wickets leading to undefined strike rates), rather than data quality issues.
+
+Stage distribution counts confirmed a strong imbalance across stages, with league matches dominating the dataset and finals occurring far less frequently. This imbalance was noted for downstream analysis.
