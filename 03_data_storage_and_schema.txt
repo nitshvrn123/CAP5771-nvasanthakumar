@@ -131,10 +131,3 @@ REFLECTION
 Centering the schema around match stage as an objective pressure proxy and separating batting and bowling performance proved critical for interpretability.
 
 By structuring the database around match context and role-specific performance tables, the schema provides a robust, reproducible foundation for analyzing how different types of cricket performance respond to competitive pressure.
-
-This database design supports:
-	•	exploratory data analysis
-	•	stage-aware performance comparisons
-	•	pressure impact metric construction
-	•	future machine learning extensions
-
