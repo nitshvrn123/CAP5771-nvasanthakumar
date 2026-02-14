@@ -1,47 +1,96 @@
 DIARY ENTRY: DATA EXPLORATION
 
-At this stage of the project, exploratory analysis was conducted to understand the structure,
-content, and limitations of the IPL performance dataset before any modeling or data
-transformation.
+PROJECT CONTEXT
 
-The exploration focused on player–match level data for batting and bowling, filtered to
-the three tournament stages relevant to the study: league, playoffs, and finals. Only
-features necessary for stage-aware performance risk analysis were retained.
+At this stage, I conducted exploratory data analysis (EDA) to understand the structure, quality, and behavior of the IPL dataset before proceeding to modeling or further transformation.
+
+The analysis focuses on player–match level performance for both batting and bowling. Matches are categorized using the stage_bucket variable (league, playoffs, final), which serves as the project’s objective pressure proxy.
+
+The goal of exploration was to validate data integrity, understand distributions, and identify any structural issues that could affect stage-based risk analysis.
+
+------------------------------------------------------------
 
 DATA PREVIEW
 
-The dataset was previewed using standard inspection methods (.head(), .info(), .describe())
-directly in the project notebook. This confirmed that batting and bowling performance metrics
-were stored at the appropriate granularity, with numeric fields such as runs, balls, economy,
-and wickets showing reasonable ranges and distributions.
+I inspected the dataset using:
 
-Stage distribution counts revealed a strong imbalance across match stages, with league matches
-comprising the majority of observations and finals representing a much smaller subset. This
-imbalance was noted as an important consideration for interpretation rather than corrected
-during exploration.
+- .head()
+- .info()
+- .describe()
+- groupby() summaries
+- simple visualizations
+
+This confirmed:
+
+• Batting and bowling records are stored at the correct player–match granularity.
+• Numeric variables (runs, balls, economy, wickets) have realistic value ranges.
+• Stage classification (league, playoffs, final) is consistent and clean.
+• The dataset spans IPL seasons from 2008 to 2024.
+
+Stage distribution analysis showed that:
+
+• League matches dominate the dataset.
+• Playoffs and finals represent a smaller subset.
+• Finals are especially limited in sample size.
+
+This imbalance was documented but not corrected, since it reflects the true tournament structure.
+
+------------------------------------------------------------
 
 ISSUE IDENTIFICATION
 
-Several potential data issues were identified and documented:
+During exploration, I checked for:
 
-• Duplicate records were checked and none were found. Player–match records are effectively
-  unique based on the combination of match_id and player (for batting) or match_id and bowler
-  (for bowling).
+1) Duplicate Records  
+No duplicate player–match records were found.  
+Batting records are uniquely identified by (match_id, player).  
+Bowling records are uniquely identified by (match_id, bowler).
 
-• Missing values were observed primarily in bowling-related metrics such as strike rate per
-  wicket. These occur when a bowler does not take a wicket in a match and reflect structural
-  characteristics of cricket data rather than data quality errors.
+2) Missing Values  
+Most variables are complete.  
+Missing values primarily appear in bowling strike rate (balls per wicket).  
+These occur when a bowler takes zero wickets in a match and are structural rather than data errors.
 
-• Stage labels were standardized using the stage_bucket variable, which cleanly categorizes
-  matches into league, playoffs, and final. No inconsistent categories were observed after
-  filtering.
+3) Extreme Values  
+High scores or expensive bowling spells were retained.  
+Since this project studies performance variability and risk, extreme outcomes are treated as meaningful signals rather than outliers to remove.
 
-• Extreme performances (e.g., very high scores or expensive bowling spells) were retained.
-  Because the project focuses on performance risk and variability, such extremes are treated
-  as informative signals rather than noise.
+------------------------------------------------------------
 
-No data issues were corrected at this stage. All findings were recorded to guide future data
-wrangling and modeling decisions.
+FEATURE SELECTION FOR ANALYSIS
 
-The project notebook serves as the primary and authoritative record of exploratory analysis,
-including descriptive statistics, missingness reports, and visual summaries.
+To maintain clarity and interpretability, I retained only the features necessary for stage-aware risk analysis.
+
+Batting features:
+• player
+• runs
+• balls
+• strike_rate
+• low_score (derived)
+• stage_bucket
+• season
+• venue
+
+Bowling features:
+• bowler
+• economy
+• wickets
+• runs_conceded
+• dot_ball_rate
+• stage_bucket
+• season
+• venue
+
+All other columns were excluded from further analysis to maintain a clean and modeling-ready dataset.
+
+------------------------------------------------------------
+
+SUMMARY
+
+The dataset is structurally sound and suitable for stage-based performance risk analysis. Missing values are minimal and interpretable. No corrective transformations were required at this stage.
+
+This exploration provides a clean, validated foundation for:
+
+• Pressure Impact Index construction
+• Stage-wise comparison of performance variability
+• Future machine learning models for run and economy prediction
