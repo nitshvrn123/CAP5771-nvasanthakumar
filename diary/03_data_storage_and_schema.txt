@@ -10,7 +10,7 @@ Because the project focuses exclusively on cricket analytics, the database schem
 
 DATABASE CHOICE
 
-A SQLite relational database was used to store all project data in a single .db file.
+A SQLite relational database was used to store all project data in a single .db file (ipl_cricket_only.db).
 
 SQLite was chosen because it is:
 	•	lightweight and portable
@@ -18,22 +18,22 @@ SQLite was chosen because it is:
 	•	well-suited for analytical workflows involving multiple related tables
 	•	fully compatible with SQL-based joins and pandas-based analysis
 
-This design ensures that all analysis can be reproduced directly from the database without relying on external services.
+The SQLite database file is included in the repository, ensuring that all analysis can be reproduced directly from stored data without external dependencies.
 
 ⸻
 
 CORE CRICKET TABLES
 
 Table: matches
-
 Primary Key: id
 
 This table stores match-level metadata for each IPL match, including:
 	•	season
 	•	date
 	•	venue
-	•	teams involved
-	•	match type and result information
+	•	team1, team2
+	•	match_type
+	•	winner and result information
 
 A key derived column in this table is:
 	•	stage_bucket, which categorizes matches into:
@@ -46,26 +46,23 @@ This variable operationalizes competitive pressure using tournament structure an
 ⸻
 
 Table: players
-
 This table stores standardized player identifiers used consistently across all performance tables. It provides a reference list of players appearing in the dataset and supports analysis across different player roles (batters, bowlers, and all-rounders).
 
 ⸻
 
 Table: player_match_batting
-
 This table stores batting-only performance outcomes aggregated at the match level, with one row per batter per match.
 
 Key fields include:
 	•	match_id (foreign key → matches.id)
 	•	player
 	•	runs
-	•	balls faced
-	•	strike rate
-	•	dismissal indicator
-	•	low-score indicator
-	•	embedded match context variables (season, venue, match type, stage_bucket)
+	•	balls
+	•	strike_rate
+	•	low_score indicator
+	•	embedded match context variables (season, venue, match_type, stage_bucket)
 
-No explicit primary key is defined for this table in SQLite; each row represents a unique batter–match record, identified in practice by (match_id, player).
+No explicit primary key constraint is enforced in SQLite. However, each record is uniquely identified in practice by the composite of (match_id, player).
 
 This table supports:
 	•	batting performance variability analysis
@@ -75,21 +72,20 @@ This table supports:
 ⸻
 
 Table: player_match_bowling
-
 This table stores bowling-only performance outcomes aggregated at the match level, with one row per bowler per match.
 
 Key fields include:
 	•	match_id (foreign key → matches.id)
 	•	bowler
-	•	overs bowled
-	•	runs conceded
-	•	wickets taken
-	•	economy rate
-	•	dot-ball rate
-	•	strike rate (balls per wicket)
-	•	embedded match context variables (season, venue, match type, stage_bucket)
+	•	overs
+	•	runs_conceded
+	•	wickets
+	•	economy
+	•	dot_ball_rate
+	•	strike_rate_balls_per_wicket
+	•	embedded match context variables (season, venue, match_type, stage_bucket)
 
-No explicit primary key is defined for this table in SQLite; each row represents a unique bowler–match spell, identified in practice by (match_id, bowler).
+No explicit primary key constraint is enforced in SQLite. However, each record is uniquely identified in practice by the composite of (match_id, bowler).
 
 This table supports:
 	•	bowling performance variability analysis
@@ -100,31 +96,4 @@ This table supports:
 
 DATABASE RELATIONSHIPS
 
-The relational structure of the database is: matches → player_match_batting → players
-matches → player_match_bowling → players This design:
-	•	preserves role-specific performance interpretation
-	•	avoids conflating batting and bowling risk mechanisms
-	•	simplifies stage-aware analysis
-	•	supports clean extensions to role-specific analyses
-
-⸻
-
-HANDLING DERIVED FEATURES
-
-Rather than storing every derived statistic directly in the database, the schema stores clean, atomic performance fields. Derived metrics such as:
-	•	low-score rates
-	•	bowling economy volatility
-	•	performance variance
-	•	pressure impact indices
-
-are computed dynamically using SQL queries and pandas pipelines. Improvements under pressure are clipped at zero in summary indices so that zero values represent stability, not missing data.
-
-⸻
-
-REFLECTION
-
-Centering the schema around match stage as a pressure proxy and separating batting and bowling performance proved critical for interpretability. By structuring the database around match context and role-specific performance tables, the schema provides a robust, reproducible foundation for analyzing how different types of cricket performance respond to competitive pressure.
-
-⸻
-
-
+The relational structure of the database is:
