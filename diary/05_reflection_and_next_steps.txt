@@ -1,0 +1,75 @@
+DIARY ENTRY: REFLECTION AND NEXT STEPS
+
+PROJECT REFLECTION
+
+Milestone 1 focused on establishing a strong analytical foundation before moving into predictive modeling. The primary goal was to clearly define a measurable research question and ensure that the data acquisition, storage, and exploration stages directly support that question.
+
+The project evolved from a general idea about cricket performance into a structured investigation of performance risk under competitive pressure. A key decision was to operationalize pressure using tournament stage (league, playoffs, final). This provides an objective and reproducible measure of competitive intensity without relying on subjective interpretation.
+
+Designing the relational SQLite database was an important step. Separating match metadata from player-level batting and bowling tables ensured clarity and interpretability. This structure also supports reproducibility, as all analysis can be recreated directly from the database using SQL queries and pandas.
+
+During exploratory analysis, I verified:
+
+• The dataset is structurally consistent and complete.
+• Missing values are mostly structural (e.g., bowling strike rate when no wicket is taken).
+• League matches dominate the dataset, while finals represent a smaller subset.
+• Extreme performances are meaningful and relevant for studying risk and variability.
+
+No unnecessary transformations were applied during exploration. Instead, potential issues were documented to guide future modeling decisions.
+
+KEY LEARNINGS
+
+This milestone reinforced several important data science principles:
+
+• A clearly defined problem statement is critical before analysis begins.
+• Database design should align directly with analytical goals.
+• Risk and variability provide deeper insight than averages alone.
+• Reproducibility and documentation are essential for professional work.
+
+The process emphasized structured thinking, clean organization, and transparency.
+
+NEXT STEPS
+
+The next phase of the project will extend this framework into predictive modeling.
+
+1) Machine Learning Models
+
+Batting Model:
+Target: Runs scored in a match  
+Features:
+• Historical average runs  
+• Variance of runs  
+• Low-score rate  
+• Match stage  
+• Season  
+• Venue  
+
+Bowling Model:
+Target: Economy rate per match  
+Features:
+• Historical average economy  
+• Wicket rate  
+• Dot-ball rate  
+• Match stage  
+• Season  
+• Venue  
+
+All features will be computed using only prior matches to prevent data leakage.
+
+2) Model Evaluation
+
+• Train-test split or time-based validation
+• Cross-validation
+• Comparison of prediction error across match stages
+• Analysis of whether performance becomes less predictable under pressure
+
+3) Advanced Risk Analysis
+
+• Refinement of Pressure Impact Indices
+• Uncertainty quantification
+• Interaction effects between stage and venue
+• Identification of pressure-resilient vs pressure-sensitive players
+
+FINAL THOUGHT
+
+Milestone 1 successfully establishes a clean, structured, and reproducible framework for analyzing performance risk in professional cricket. The database schema, documentation, and exploratory analysis provide a strong foundation for advanced modeling and deeper stage-aware performance analysis in future milestones.
