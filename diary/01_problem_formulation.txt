@@ -1,23 +1,108 @@
-Problem Formulation
 
-In professional cricket, performance is commonly summarized using aggregate statistics such as batting average, strike rate, economy rate, or wickets. While these metrics describe overall ability, they do not explicitly capture how performance changes under high-stakes situations. In the IPL, match pressure varies strongly by tournament stage: league matches allow recovery over a long season, while playoffs and finals introduce elimination risk, heightened scrutiny, and increased competitive intensity.
+⸻
 
-This project investigates whether later tournament stages (playoffs and finals) are associated with higher performance risk and variability for players compared to league matches. Rather than collapsing all non-league matches into a single category, the analysis treats league, playoffs, and finals as distinct stages to preserve tournament structure and enable fine-grained comparison of performance under increasing pressure. The focus is not on predicting match winners, but on quantifying how pressure shifts the distribution of individual performance for both batters and bowlers.
+DIARY ENTRY: PROBLEM FORMULATION
 
-Using structured IPL match and player-level records, the project builds stage-aware performance profiles:
+Project Objective
 
-Batting outcomes (examples)
-	•	Runs scored per match/innings
-	•	Probability of a low score (e.g., runs < 10)
-	•	Variance/volatility in runs
-	•	Strike rate differences across stages
+In professional cricket, performance is commonly summarized using aggregate statistics such as batting average, strike rate, economy rate, or wickets. While these metrics describe overall ability, they do not explicitly capture how performance changes under high-stakes situations.
 
-Bowling outcomes (examples)
-	•	Wickets per match/innings
-	•	Economy rate and/or runs conceded per over
-	•	Variance/volatility in economy or runs conceded
-	•	Probability of a high-cost spell (e.g., economy above a defined threshold)
+In the IPL, competitive pressure varies by tournament stage. League matches allow recovery across a long season, while playoffs and finals introduce elimination risk, heightened scrutiny, and increased competitive intensity.
 
-Players are compared across league, playoff, and final matches to quantify how performance risk evolves as competitive pressure increases. This framework allows identification of players who remain stable (“pressure-resilient”) as well as those whose performance becomes riskier (“pressure-sensitive”) at later stages. To summarize these effects, the project constructs interpretable Pressure Impact Indices for batting and bowling that capture stage-specific changes in risk-related metrics relative to league performance.
+This project investigates whether later tournament stages (playoffs and finals) are associated with higher performance risk and variability for players compared to league matches.
 
-This project emphasizes interpretability and reproducibility, relying solely on match context and historical IPL performance data. The goal is to provide a transparent, data-driven framework for understanding how competitive pressure relates to performance risk in elite cricket.
+⸻
+
+Operational Definition of Pressure
+
+Competitive pressure is operationalized using match stage:
+	•	League
+	•	Playoffs
+	•	Final
+
+Rather than collapsing all non-league matches into a single group, I treat league, playoffs, and finals as distinct categories. This preserves tournament structure and allows fine-grained comparison across increasing pressure levels.
+
+⸻
+
+Analytical Focus
+
+The primary focus is not predicting match winners. Instead, I quantify how pressure shifts the distribution of individual performance for both batters and bowlers.
+
+⸻
+
+Batting Outcomes
+	•	Runs scored per innings
+	•	Probability of a low score (runs < 10)
+	•	Variance of runs
+	•	Stage-specific shifts in average performance
+	•	Batting Pressure Impact Index
+
+⸻
+
+Bowling Outcomes
+	•	Wickets per match
+	•	Economy rate
+	•	Variance of economy
+	•	Probability of a high-cost spell
+	•	Bowling Pressure Impact Index
+
+⸻
+
+Predictive Modeling Extension (Machine Learning)
+
+In addition to descriptive analysis, this project prepares the dataset for supervised machine learning models that predict player performance under similar match conditions.
+
+Two separate predictive tasks will be developed:
+
+Batting Model
+Goal:
+Predict expected runs scored in a future match given similar circumstances.
+
+Features:
+	•	Historical average runs
+	•	Run variance
+	•	Low-score probability
+	•	Match stage
+	•	Season
+	•	Venue
+
+Target:
+	•	Runs scored
+
+⸻
+
+Bowling Model
+Goal:
+Predict expected economy rate in a future match under similar circumstances.
+
+Features:
+	•	Historical economy rate
+	•	Wicket rate
+	•	Dot-ball rate
+	•	Match stage
+	•	Season
+	•	Venue
+
+Target:
+	•	Economy rate
+
+All models will be trained using only historical matches prior to prediction to avoid data leakage.
+
+⸻
+
+Time Horizon
+
+The dataset covers IPL seasons from 2008 to 2024.
+All analysis is conducted at the player–match level.
+
+⸻
+
+Summary
+
+This project combines:
+	•	Structured data acquisition
+	•	Relational database design
+	•	Exploratory risk analysis
+	•	Stage-aware performance comparison
+	•	A modeling-ready machine learning framework
+
