@@ -1,0 +1,58 @@
+HOW TO RUN THIS PROJECT (Google Colab)
+
+This project was developed and executed in Google Colab.
+
+Step 1 — Open the Notebook
+Open the main project notebook in Google Colab.
+
+Step 2 — Upload Required Files
+Click the folder icon on the left sidebar in Colab.
+Click “Upload”.
+Upload the following files directly into the root directory (/content/):
+
+1. ipl_cricket_only.db
+2. matches.csv
+3. players.csv
+4. player_match_batting.csv
+5. player_match_bowling.csv
+
+no need of uploading every files just ( ipl_cricket_only.db) is fine
+
+Make sure the files appear directly under:
+   /content/
+
+The notebook expects:
+   /content/ipl_cricket_only.db
+
+Step 3 — Run All Cells
+Click:
+Runtime → Run All
+
+The notebook will:
+- Load the SQLite database
+- Perform exploratory data analysis
+- Compute stage-based pressure metrics
+- Generate visualizations
+- Construct batting and bowling Pressure Impact Indices
+
+No API keys or external credentials are required.
+All analysis runs locally inside Colab.
+
+--------------------------------------
+
+Optional (Local Python Execution)
+
+If running locally:
+
+1. Ensure Python 3.10+
+2. Install dependencies:
+
+   pip install -r requirements.txt
+
+3. Place the database file in the same directory as the notebook
+4. Run the notebook normally
+
+--------------------------------------
+
+If any file is missing, the notebook will raise:
+FileNotFoundError for ipl_cricket_only.db
