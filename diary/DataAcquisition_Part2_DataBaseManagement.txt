@@ -1,121 +1,122 @@
- DIARY ENTRY: DATA ACQUISITION II — DATA STORAGE AND DATABASE SCHEMA (REVISED)
+DIARY ENTRY: DATA ACQUISITION II — DATA STORAGE AND DATABASE SCHEMA (REVISED)
 
 PROJECT CONTEXT
 
-At this stage of the project, the focus moved from data collection to organizing the acquired cricket data into a structured and reproducible system. The objective of the project is to study how match context and competitive pressure—operationalized through tournament stage (league, playoffs, finals)—are associated with performance variability and risk in IPL players.
+At this stage of the project, I moved from data collection to organizing the IPL cricket data into a structured and reproducible database. My goal is to study how match context and competitive pressure—operationalized using tournament stage (league, playoffs, final)—relates to performance risk and variability for IPL players.
 
-Importantly, the project considers batting and bowling performance as distinct analytical roles, allowing performance risk to be evaluated separately rather than conflating fundamentally different performance mechanisms.
-
-To support this objective, a relational database schema was designed to clearly represent relationships between matches, players, and role-specific match-level performance outcomes.
+A key design decision is to treat batting and bowling as distinct analytical roles, since the performance signals and risk mechanisms are different for each role. To support this, I used separate batting and bowling performance tables linked to the same match context.
 
 ⸻
 
 DATABASE SYSTEM
 
-A SQLite relational database was selected for this project. SQLite is lightweight, portable, and well-suited for analytical workflows where multiple related tables must be queried together. Using a single .db file ensures the analysis is reproducible, transparent, and easy to share across environments.
+I used a SQLite relational database stored as a single file:
+
+ipl_cricket_only.db
+
+SQLite is lightweight, portable, and works well for analytical workflows where I need to join match metadata with player-level performance records. Using one database file helps keep the project reproducible and easy to run in new environments (e.g., Colab).
 
 ⸻
 
-STRUCTURED CRICKET TABLES
+STRUCTURED TABLES (CURRENT SCHEMA)
 
-TABLE: matches
+1) TABLE: matches
 Primary Key: id
 
-This table stores match-level metadata and provides the contextual anchor for the entire analysis.
+Purpose:
+Stores match-level metadata and provides the “context anchor” for all analysis.
 
-Key fields include:
-	•	season
-	•	date
-	•	venue
-	•	match_type
-	•	team1, team2
-	•	winner and result fields
-	•	stage_bucket (league / playoffs / final)
+Key columns include:
+- id
+- season
+- date
+- venue
+- match_type
+- team1, team2
+- winner, result
+- stage_bucket (league / playoffs / final)
 
-The stage_bucket variable is central to the project, as it operationalizes competitive pressure using tournament importance rather than subjective or external indicators.
+The stage_bucket field is the project’s pressure proxy, derived from tournament stage.
+
+2) TABLE: players
+
+Purpose:
+Stores the standardized player identifier list used across the performance tables.
+
+Key columns include:
+- player_name
+
+(Practically, player_name is treated as a stable identifier across tables.)
+
+3) TABLE: player_match_batting
+
+Purpose:
+Stores batting-only performance at the player–match level (one row per batter per match).
+
+Key columns include:
+- match_id (FK → matches.id)
+- player (FK → players.player_name)
+- runs
+- balls
+- strike_rate
+- low_score (derived: runs < 10)
+- season, date, venue, match_type, stage_bucket (included for easier analysis)
+
+Uniqueness:
+No explicit primary key is enforced in SQLite; in practice each record is identified by (match_id, player).
+
+4) TABLE: player_match_bowling
+
+Purpose:
+Stores bowling-only performance at the player–match level (one row per bowler per match).
+
+Key columns include:
+- match_id (FK → matches.id)
+- bowler (FK → players.player_name)
+- balls
+- overs
+- runs_conceded
+- wickets
+- wides, no_balls
+- dot_balls, dot_ball_rate
+- economy
+- strike_rate_balls_per_wicket (can be missing when wickets = 0)
+- season, date, venue, match_type, stage_bucket (included for easier analysis)
+
+Uniqueness:
+No explicit primary key is enforced in SQLite; in practice each record is identified by (match_id, bowler).
 
 ⸻
-
-TABLE: players
-This table stores standardized player identifiers used across all performance records. It ensures consistent naming, avoids duplication, and supports analysis across different player roles (batters, bowlers, and all-rounders).
-
-⸻
-
-TABLE: player_match_batting
-This table stores batting-only performance outcomes aggregated at the match level, with one row per batter per match.
-
-Key fields include:
-	•	match_id (foreign key → matches.id)
-	•	player
-	•	runs
-	•	balls faced
-	•	strike rate
-	•	dismissal indicator
-	•	low-score indicator
-	•	embedded match context variables (season, venue, match type, stage_bucket)
-
-This table supports analysis of:
-	•	batting performance variability
-	•	risk of failure (e.g., low scores)
-	•	stage-specific shifts in batting outcomes
-
-⸻
-
-TABLE: player_match_bowling
-This table stores bowling-only performance outcomes aggregated at the match level, with one row per bowler per match.
-
-Key fields include:
-	•	match_id (foreign key → matches.id)
-	•	bowler
-	•	overs bowled
-	•	runs conceded
-	•	wickets taken
-	•	economy rate
-	•	dot-ball rate
-	•	strike rate (balls per wicket)
-	•	embedded match context variables (season, venue, match type, stage_bucket)
-
-This table enables analysis of:
-	•	bowling performance variability
-	•	risk of high-cost spells
-	•	stage-specific changes in economy and wicket-taking effectiveness
-
-⸻
-
-No explicit primary key is defined for this table in SQLite; each row represents a unique bowler–match spell identified in practice by (match_id, bowler).
 
 RELATIONAL DESIGN AND JOIN STRATEGY
 
-The schema follows a clear relational structure: matches  →  player_match_batting  →  players
-matches  →  player_match_bowling  →  players
+The database follows this join structure:
 
-This design:
-	•	preserves role-specific performance interpretation
-	•	avoids mixing batting and bowling risk mechanisms
-	•	simplifies stage-aware analysis without repeated joins
-	•	supports clean extensions to role-specific or player-type analyses
+matches.id  →  player_match_batting.match_id
+matches.id  →  player_match_bowling.match_id
 
-Foreign key relationships ensure referential integrity and make joins explicit and interpretable.
+players.player_name  →  player_match_batting.player
+players.player_name  →  player_match_bowling.bowler
+
+This design keeps match context in one place (matches) while maintaining separate, role-specific outcome tables for batting and bowling. It prevents mixing incompatible performance signals and makes stage-aware analysis straightforward.
 
 ⸻
 
 HANDLING DERIVED FEATURES
 
-Derived variables such as:
-	•	low-score indicators
-	•	high-cost spell indicators
-	•	batting and bowling performance volatility
-	•	stage-specific risk rates
+I store “atomic” performance columns in the database (runs, balls, wickets, economy, etc.). I do not permanently store most derived risk metrics to avoid duplication and keep the database flexible.
 
-are computed dynamically using SQL queries or pandas pipelines rather than being permanently stored in the schema. Risk-related improvements under pressure are clipped at zero when constructing summary indices, ensuring that zero values represent stability rather than missing data.
+Derived features are computed in the notebook using SQL + pandas, including:
+- low-score rates
+- performance variance by stage
+- pressure impact indices (batting and bowling)
+
+When building summary indices, I clip improvements under pressure at zero so that:
+- 0 represents stability (not missingness)
+- positive values represent worse performance under pressure
 
 ⸻
 
 REFLECTION
 
-Designing the database schema clarified how match context and player performance interact across different pressure situations. By separating match metadata from player-level outcomes and explicitly separating batting and bowling performance, the schema supports a comprehensive, interpretable, and reproducible analysis of performance risk.
-
-This database structure now provides a strong foundation for:
-	•	exploratory data analysis
-	•	stage-aware batting and bowling risk metrics
-	•	future machine learning models focused on performance variability under high-stakes match conditions
+Designing this schema clarified the relationship between match context and player outcomes. Separating batting and bowling into role-specific player–match tables improved interpretability and made my downstream analysis cleaner. This database now provides a strong foundation for exploratory analysis, risk metrics by stage, and future machine learning extensions (predicting expected runs or economy under similar match conditions).
