@@ -1,35 +1,78 @@
 DIARY ENTRY: DATA EXPLORATION — PART I (DATA PREVIEW)
 
-At this stage, a focused analysis dataset was constructed by selecting only the tables and variables relevant to the project objective: analyzing how competitive pressure (league, playoffs, finals) relates to performance risk and variability in IPL players.
+At this stage, I constructed a focused analysis dataset by selecting only the tables and variables directly relevant to the project objective: studying how competitive pressure (league, playoffs, finals) relates to performance risk and variability in IPL players.
 
-### Features Kept for Data Preview
+Only player–match level records were retained, as this is the appropriate granularity for analyzing performance variability across match stages.
 
-For batting analysis, the following features were retained:
+⸻
+
+FEATURES RETAINED
+
+For batting analysis, the following variables were kept:
 - match_id (link to match context)
 - player
-- runs and balls faced (core performance outcomes)
+- runs
+- balls
 - strike_rate
 - low_score indicator (runs < 10)
 - stage_bucket (league / playoffs / final)
 - season, date, venue (contextual variables)
 
-For bowling analysis, the following features were retained:
+For bowling analysis, the following variables were kept:
 - match_id
 - bowler
-- overs, runs_conceded, wickets
+- overs
+- runs_conceded
+- wickets
 - economy
 - dot_ball_rate
 - strike_rate_balls_per_wicket
 - stage_bucket
 - season, date, venue
 
-Only player–match level data was retained, as this is the appropriate granularity for studying performance variability under pressure.
+Unnecessary columns unrelated to performance risk were excluded to maintain clarity and interpretability.
 
-### Descriptive Preview
+⸻
 
-The datasets were previewed using `.head()`, `.info()`, and `.describe()` to verify structure, data types, and value ranges.  
-Summary statistics confirmed reasonable ranges for batting and bowling metrics and showed expected variation across match stages.
+DESCRIPTIVE PREVIEW
 
-Missingness was quantified using a percentage-based report. Most missing values were associated with non-participation (e.g., bowlers with no wickets leading to undefined strike rates), rather than data quality issues.
+The datasets were inspected using:
+- .head()
+- .info()
+- .describe()
 
-Stage distribution counts confirmed a strong imbalance across stages, with league matches dominating the dataset and finals occurring far less frequently. This imbalance was noted for downstream analysis.
+These checks verified:
+- Correct data types (numeric vs categorical)
+- No structural inconsistencies
+- Reasonable ranges for performance metrics
+
+Summary statistics confirmed expected variability in runs, economy, and wickets across match stages.
+
+⸻
+
+MISSINGNESS & STRUCTURAL OBSERVATIONS
+
+Missing values were quantified using percentage-based checks.
+
+Most missing values were structural rather than errors. For example:
+- Bowling strike rate is undefined when a bowler takes zero wickets.
+- Some contextual match fields contain occasional null values.
+
+No data corrections were performed at this stage; observations were documented for transparency.
+
+⸻
+
+STAGE DISTRIBUTION
+
+Stage distribution counts revealed strong imbalance:
+- League matches dominate the dataset.
+- Playoffs are less frequent.
+- Finals represent the smallest subset.
+
+This imbalance was not corrected but will be considered during interpretation and modeling.
+
+⸻
+
+SUMMARY
+
+This initial exploration confirms that the dataset is structurally sound, stage-aware, and suitable for constructing pressure-based performance risk metrics. The cleaned player–match level dataset now serves as the foundation for risk index construction and future machine learning modeling.
