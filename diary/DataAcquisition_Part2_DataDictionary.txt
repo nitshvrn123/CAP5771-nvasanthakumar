@@ -1,189 +1,196 @@
-DATA ACQUISITION PART II — DATA DICTIONARY (Version 1)
+DATA ACQUISITION PART II — DATA DICTIONARY (Version 2)
 
-Project: Quantifying Performance Risk in Professional Cricket Across Match Stages
+This data dictionary defines the variables stored in the SQLite database
+(ipl_cricket_only.db) for Milestone 1.
 
-This data dictionary defines the core variables stored in the relational database for Milestone 1.
-All data is derived exclusively from structured cricket match and player performance records.
+All data is derived exclusively from structured IPL match and player performance records.
+No external or psychological variables are used.
 
-The goal of this database is to support analysis of performance variability and risk for both batters and bowlers under different match pressure stages (league, playoffs, final).
+The database supports stage-aware analysis of performance variability and risk
+for both batters and bowlers across three match stages:
+league, playoffs, and final.
 
 ⸻
 
 TABLE: matches
 
 id (INTEGER)
-	•	Unique identifier for each IPL match.
-	•	Primary Key.
+- Unique identifier for each IPL match.
+- Primary Key.
 
-date (DATE)
-	•	Date on which the match was played.
+season (TEXT)
+- IPL season (e.g., "2007/08").
 
-season (INTEGER)
-	•	Season/year extracted from the match date.
+date (TEXT)
+- Match date.
+
+city (TEXT)
+- City where match was played (may contain null values).
 
 venue (TEXT)
-	•	Stadium or city where the match was played.
+- Stadium or venue name.
 
 team1 (TEXT)
-	•	First competing team.
+- First competing team.
 
 team2 (TEXT)
-	•	Second competing team.
-
-match_type (TEXT)
-	•	Match format/category (e.g., league match, qualifier, eliminator, final).
-
-stage_bucket (TEXT)
-	•	Derived match stage used as an objective pressure proxy:
-	•	league
-	•	playoffs
-	•	final
+- Second competing team.
 
 winner (TEXT)
-	•	Winning team.
+- Winning team.
 
 result (TEXT)
-	•	Match outcome type (runs, wickets, tie, no result).
+- Match result type (runs, wickets, tie, no result).
+
+match_type (TEXT)
+- Match classification (league, qualifier, eliminator, final).
+
+stage_bucket (TEXT)
+- Derived tournament stage:
+  - league
+  - playoffs
+  - final
+- Used as the objective pressure proxy.
 
 ⸻
 
 TABLE: players
 
 player_name (TEXT)
-	•	Standardized player name used consistently across all performance records.
-
-Note: No explicit primary key is enforced in SQLite; player names act as stable identifiers in practice.
-
-This table serves as a reference table for all player roles, including:
-	•	Specialist batters
-	•	Specialist bowlers
-	•	All-rounders
+- Standardized player name used across performance tables.
+- Acts as a stable identifier in practice.
 
 ⸻
 
 TABLE: player_match_batting
 
-This table stores batting-only player–match performance outcomes
-(one row per batter per match).
+One row per batter per match.
 
 match_id (INTEGER)
-	•	Match identifier linking performance to match context.
-	•	Foreign key → matches.id.
+- Foreign Key → matches.id
 
 player (TEXT)
-	•	Batter name.
-	•	Foreign key → players.player_name.
+- Foreign Key → players.player_name
 
 runs (INTEGER)
-	•	Runs scored by the player in the match.
+- Runs scored in the match.
 
 balls (INTEGER)
-	•	Balls faced by the player.
+- Balls faced.
 
 strike_rate (REAL)
-	•	Batting strike rate: (runs / balls) × 100.
+- (runs / balls) × 100
 
 low_score (INTEGER: 0/1)
-	•	Derived indicator:
-	•	1 if runs < 10
-	•	0 otherwise
-	•	Used as a proxy for batting failure risk.
+- Derived variable:
+  - 1 if runs < 10
+  - 0 otherwise
+- Proxy for batting failure risk.
 
+season (TEXT)
+date (TEXT)
+venue (TEXT)
+match_type (TEXT)
 stage_bucket (TEXT)
-	•	Match stage category inherited from matches.
 
-Primary Key: None explicitly defined (SQLite).
-Each row represents a unique player–match batting record in practice.
+These contextual variables are retained for stage-aware analysis.
+
+Primary Key:
+- Not explicitly enforced.
+- Each record is uniquely identified in practice by (match_id, player).
 
 ⸻
 
 TABLE: player_match_bowling
 
-This table stores bowling-only player–match performance outcomes
-(one row per bowler per match).
+One row per bowler per match.
 
 match_id (INTEGER)
-	•	Match identifier linking performance to match context.
-	•	Foreign key → matches.id.
+- Foreign Key → matches.id
 
 bowler (TEXT)
-	•	Bowler name.
-	•	Foreign key → players.player_name.
+- Foreign Key → players.player_name
 
 balls (INTEGER)
-	•	Balls delivered by the bowler.
+- Balls delivered.
 
 overs (REAL)
-	•	Overs bowled (balls / 6).
+- Overs bowled.
 
 runs_conceded (INTEGER)
-	•	Runs conceded while bowling.
+- Runs conceded.
 
 wickets (INTEGER)
-	•	Number of wickets taken.
+- Wickets taken.
+
+wides (INTEGER)
+no_balls (INTEGER)
+
+dot_balls (INTEGER)
+dot_ball_rate (REAL)
 
 economy (REAL)
-	•	Runs conceded per over.
-
-dot_ball_rate (REAL)
-	•	Proportion of dot balls delivered.
+- Runs conceded per over.
 
 strike_rate_balls_per_wicket (REAL)
-	•	Bowling strike rate measured as balls per wicket.
+- Balls per wicket.
+- May be null when wickets = 0.
 
+season (TEXT)
+date (TEXT)
+venue (TEXT)
+match_type (TEXT)
 stage_bucket (TEXT)
-	•	Match stage category inherited from matches.
 
-Primary Key: None explicitly defined (SQLite).
-Each row represents a unique bowler–match spell, identified in practice by
-(match_id, bowler).
-
-⸻
-
-DERIVED ANALYSIS FEATURES
-
-(Computed during EDA; not stored as raw tables)
-
-Batting risk metrics
-	•	avg_runs (by stage)
-	•	low_score_rate
-	•	run_variance
-	•	pressure_impact_index (batting)
-
-Bowling risk metrics
-	•	avg_economy
-	•	economy_variance
-	•	high_cost_spell_rate
-	•	pressure_impact_index (bowling)
-
-Labels
-
-pressure_label
-	•	Stable
-	•	More risky under pressure
-	•	High pressure drop
-
-Note: Improvements under pressure are clipped at zero in summary indices;
-a value of zero represents stability, not missing data.
+Primary Key:
+- Not explicitly enforced.
+- Each record is uniquely identified in practice by (match_id, bowler).
 
 ⸻
 
-NOTES AND SCOPE
-	•	Milestone 1 focuses on:
-	•	data acquisition
-	•	database design
-	•	exploration readiness
-	•	Batting and bowling outcomes are stored in separate tables to preserve role-specific interpretation.
-	•	All variables are derived from objective match outcomes, not psychological inference.
-	•	Later milestones may:
-	•	refine role-specific pressure metrics
-	•	introduce uncertainty quantification
-	•	extend analysis to team-level dynamics
+DERIVED ANALYSIS FEATURES (Computed in Notebook)
+
+The following metrics are not stored as raw tables but computed dynamically:
+
+Batting:
+- Average runs by stage
+- Low-score rate
+- Variance of runs
+- Pressure Impact Index (batting)
+
+Bowling:
+- Average economy by stage
+- High-cost spell rate
+- Variance of economy
+- Pressure Impact Index (bowling)
+
+Pressure Labels:
+- Stable
+- More risky under pressure
+- High pressure drop
+
+When computing impact indices, improvements under pressure are clipped at zero.
+A value of zero represents stability (not missing data).
+
+⸻
+
+SCOPE
+
+Milestone 1 focuses on:
+- Data acquisition
+- Database schema design
+- Exploratory analysis
+- Risk metric construction
+
+The schema is designed to support future machine learning models that predict:
+- Runs scored (batting model)
+- Economy rate (bowling model)
+under similar match conditions.
 
 ⸻
 
 SUMMARY
 
-This data dictionary defines a cricket-only, role-aware relational schema that supports exploratory analysis of performance risk for both batters and bowlers across match stages.
-It provides a defensible and reproducible foundation for advanced analytics without relying on external or subjective data sources.
-
+This data dictionary documents a structured, role-aware relational schema
+that supports reproducible and interpretable analysis of IPL performance
+risk across match stages.
