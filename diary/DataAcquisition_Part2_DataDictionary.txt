@@ -1,5 +1,6 @@
 DATA ACQUISITION PART II — DATA DICTIONARY (Version 2)
 
+
 This data dictionary defines the variables stored in the SQLite database
 (ipl_cricket_only.db) for Milestone 1.
 
@@ -8,7 +9,7 @@ No external or psychological variables are used.
 
 The database supports stage-aware analysis of performance variability and risk
 for both batters and bowlers across three match stages:
-league, playoffs, and final.
+league, playoffs, and final
 
 ⸻
 
