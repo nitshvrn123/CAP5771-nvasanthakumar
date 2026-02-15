@@ -10,7 +10,7 @@ A key design decision is to treat batting and bowling as distinct analytical rol
 
 DATABASE SYSTEM
 
-I used a SQLite relational database stored as a single file:
+I used a SQLite relational database stored as a single file : 
 
 ipl_cricket_only.db
 
@@ -24,7 +24,7 @@ STRUCTURED TABLES (CURRENT SCHEMA)
 Primary Key: id
 
 Purpose:
-Stores match-level metadata and provides the “context anchor” for all analysis.
+Stores the match-level metadata and provides the “context anchor” for all analysis.
 
 Key columns include:
 - id
