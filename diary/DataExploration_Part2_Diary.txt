@@ -1,39 +1,74 @@
 DIARY ENTRY: DATA EXPLORATION — PART II (ISSUE IDENTIFICATION)
 
-This section documents potential data issues identified during exploratory analysis. The goal is to record and understand these issues rather than resolve them at this stage.
+This section documents potential data issues identified during exploratory analysis. 
+The objective at this stage is not to resolve these issues, but to clearly record and understand them before proceeding to modeling.
 
-### Duplicates and Uniqueness
+⸻
 
-No exact duplicate records were observed in the batting or bowling datasets.
-Although no explicit primary key is enforced in SQLite, player–match records are effectively unique by:
+DUPLICATES AND UNIQUENESS
+
+No exact duplicate records were observed in either the batting or bowling datasets.
+
+Although no explicit primary key constraints are enforced in SQLite for the performance tables, player–match records are effectively unique based on:
+
 - (match_id, player) for batting
 - (match_id, bowler) for bowling
 
-This definition of uniqueness is consistent with the analytical goal of studying per-match performance.
+This definition of uniqueness aligns with the analytical objective of studying performance at the player–match level.
 
-### Missing Values
+⸻
+
+MISSING VALUES
 
 Missing values were observed primarily in bowling-related metrics such as strike_rate_balls_per_wicket.
-These occur when a bowler does not take a wicket in a match and therefore reflect structural characteristics of cricket data rather than data errors.
 
-Missingness in batting metrics was minimal after filtering to relevant match stages.
+These missing values are structural rather than errors. For example:
+- If a bowler takes zero wickets in a match, bowling strike rate (balls per wicket) is undefined.
+- Such cases reflect cricket rules and performance mechanics, not data corruption.
 
-### Standardization Issues
+Missingness in batting variables was minimal after filtering to relevant match stages.
 
-Match stages were standardized using the `stage_bucket` variable, which categorizes matches into league, playoffs, and final.
-After filtering, no inconsistent or unexpected stage labels were observed.
-Numeric performance variables were confirmed to have appropriate data types.
+No imputation was performed at this stage.
 
-### Noise vs Outliers
+⸻
 
-Extreme performances (e.g., very high run totals or expensive bowling spells) were retained rather than removed.
-Because the project focuses on performance risk and variability, such extremes are treated as informative signals rather than noise.
+STANDARDIZATION AND DATA TYPES
 
-Final-stage matches are relatively rare, which introduces higher uncertainty in estimates for that stage. This imbalance is documented and handled analytically rather than corrected during exploration.
+Match stages were standardized using the `stage_bucket` variable, categorizing matches into:
+- league
+- playoffs
+- final
 
-### Open Questions for Stakeholders
+After filtering, no inconsistent or unexpected stage labels were detected.
 
-- Should abandoned or no-result matches be excluded from performance risk analysis?
-- Is the current mapping of qualifiers and eliminators into the playoffs category appropriate?
-- Should minimum appearance thresholds be enforced separately for finals due to small sample size?
-- Are super-over performances included, and should they be treated differently?
+All numeric performance variables (runs, economy, wickets, etc.) were verified to have appropriate numeric data types.
+
+⸻
+
+NOISE VS OUTLIERS
+
+Extreme performances (e.g., unusually high scores or expensive bowling spells) were retained.
+
+Because the project focuses on performance risk and variability, these extreme outcomes are treated as informative signals rather than noise to be removed.
+
+Final-stage matches are relatively rare, introducing greater statistical uncertainty for that stage. This imbalance is documented and will be handled analytically rather than corrected during exploration.
+
+⸻
+
+OPEN QUESTIONS FOR FUTURE CONSIDERATION
+
+Several design decisions may require clarification:
+
+- Should abandoned or no-result matches be excluded from risk analysis?
+- Is the current grouping of qualifiers and eliminators into the playoffs category appropriate?
+- Should stricter minimum appearance thresholds be enforced for finals due to smaller sample sizes?
+- Are super-over performances included, and if so, should they be treated differently?
+
+These questions are documented for transparency and potential refinement in future milestones.
+
+⸻
+
+SUMMARY
+
+The dataset appears structurally sound, with no duplicate records and only expected structural missingness. 
+All identified issues have been documented to ensure methodological transparency before advancing to modeling and pressure index construction.
