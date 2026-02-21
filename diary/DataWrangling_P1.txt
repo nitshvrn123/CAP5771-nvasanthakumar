@@ -1,0 +1,134 @@
+DATA WRANGLING PART I — CLEANING
+
+Project Context
+
+The goal of this stage was to transform the IPL player–match datasets into analysis-ready, reproducible tables suitable for modeling performance variability under competitive pressure. Cleaning was implemented through explicit, rule-based transformations applied to batting and bowling datasets.
+
+⸻
+
+1. Top Data Problems Addressed First
+
+The following issues were prioritized:
+	1.	Incorrect data types (especially dates and numeric performance metrics)
+	2.	Structural missing values in bowling strike rate
+	3.	Duplicate player–match records
+	4.	Inconsistent categorical formatting
+	5.	Logically impossible numeric values
+
+These were fixed first because structural integrity is required before any modeling or aggregation.
+
+⸻
+
+2. Cleaning Rules Applied and Why
+
+A. Data Type Conversion
+
+Problem:
+The date column was stored as object (string) instead of a datetime type.
+
+Rule Applied:
+Converted date to datetime64[ns] using pd.to_datetime(errors="coerce").
+
+Before: date → object
+
+After : date → datetime64[ns] 
+
+Why:
+Datetime parsing enables correct time-based filtering, grouping, and reproducibility.
+
+Numeric columns were also explicitly enforced using pd.to_numeric() to prevent silent type issues.
+
+⸻
+
+B. Standardization
+
+Problem:
+Categorical variables such as stage_bucket, venue, and player names may contain inconsistent casing or spacing.
+
+Rule Applied:
+Applied .str.strip() and standardized stage_bucket to lowercase.
+
+Why:
+Prevents duplicate categories (e.g., “League” vs “league”) and ensures consistent grouping.
+
+⸻
+
+C. Duplicate Handling
+
+Definition of Uniqueness:
+	•	Batting: (match_id, player)
+	•	Bowling: (match_id, bowler)
+
+Before Cleaning: Batting duplicates: 0  
+Bowling duplicates: 0
+
+After Cleaning: Batting duplicates: 0  
+Bowling duplicates: 0
+
+Duplicates were checked and confirmed absent, validating dataset integrity.
+
+⸻
+
+D. Missing Values
+
+Observed Missingness (Bowling): strike_rate_balls_per_wicket → 40.07% missing
+
+This missingness corresponds to bowlers who took zero wickets.
+
+Rule Applied:
+	•	Recomputed strike rate where wickets > 0.
+	•	Preserved missing values when wickets = 0 (structural missingness).
+
+Why:
+These are not data errors; they reflect cricket rules. Artificial imputation would distort performance metrics.
+
+⸻
+
+E. Impossible Values
+
+Rows with negative values in runs, balls, wickets, overs, or economy were removed because such values are logically impossible in cricket match data.
+
+⸻
+
+Before cleaning:
+	•	Date column stored as object
+	•	Numeric types not explicitly enforced
+	•	Stage labels required normalization
+	•	Structural missing strike rate present
+	•	Duplicates checked but not programmatically enforced
+
+After cleaning:
+	•	Date column converted to datetime64[ns]
+	•	Numeric columns explicitly enforced as int or float
+	•	Stage labels standardized (league, playoffs, final)
+	•	Duplicates confirmed absent and rule enforced
+	•	Structural missingness preserved intentionally
+	•	Clean datasets saved as:
+data/processed/batting_clean.csv
+data/processed/bowling_clean.csv
+
+Stage Distribution (Batting): league: 15511  
+playoffs: 739  
+final: 265 
+
+Stage Distribution (Bowling): league: 12256  
+playoffs: 527  
+final: 195
+
+These counts confirm a strong class imbalance across match stages.
+
+⸻
+
+4. Remaining Risks and Potential Bias
+	•	League matches dominate the dataset, potentially biasing models toward lower-pressure contexts.
+	•	Finals have small sample sizes, increasing variance in pressure-related estimates.
+	•	Structural missing values must be handled carefully in modeling.
+	•	Removing impossible values slightly reduces sample size.
+
+These risks are documented and will be addressed analytically rather than through aggressive cleaning.
+
+⸻
+
+Reflection
+
+The cleaning pipeline improved structural correctness and reproducibility without artificially altering meaningful cricket performance signals. The dataset is now consistent, defensible, and ready for modeling stage-specific performance variability.
