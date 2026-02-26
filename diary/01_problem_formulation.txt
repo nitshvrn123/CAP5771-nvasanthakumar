@@ -1,108 +1,122 @@
+# DIARY ENTRY: PROBLEM FORMULATION
 
-⸻
-
-DIARY ENTRY: PROBLEM FORMULATION
-
-Project Objective
+## Project Objective
 
 In professional cricket, performance is commonly summarized using aggregate statistics such as batting average, strike rate, economy rate, or wickets. While these metrics describe overall ability, they do not explicitly capture how performance changes under high-stakes situations.
 
-In the IPL, competitive pressure varies by tournament stage. League matches allow recovery across a long season, while playoffs and finals introduce elimination risk, heightened scrutiny, and increased competitive intensity.
+In the Indian Premier League (IPL), competitive pressure varies by tournament stage. League matches allow recovery across a long season, while playoffs and finals introduce elimination risk, heightened scrutiny, and increased competitive intensity.
 
-This project investigates whether later tournament stages (playoffs and finals) are associated with higher performance risk and variability for players compared to league matches.
+This project investigates whether later tournament stages (playoffs and finals) are associated with higher performance risk and variability for players compared to league matches, and builds regression models to predict future player performance under similar contextual conditions.
 
-⸻
+---
 
-Operational Definition of Pressure
+## Operational Definition of Pressure
 
 Competitive pressure is operationalized using match stage:
-	•	League
-	•	Playoffs
-	•	Final
 
-Rather than collapsing all non-league matches into a single group, I treat league, playoffs, and finals as distinct categories. This preserves tournament structure and allows fine-grained comparison across increasing pressure levels.
+- League  
+- Playoffs  
+- Final  
 
-⸻
+League matches serve as the baseline. Playoffs and finals represent progressively higher competitive pressure.
 
-Analytical Focus
+Rather than collapsing all non-league matches into a single group, league, playoffs, and finals are treated as distinct categories. This preserves tournament structure and enables fine-grained comparison across increasing pressure levels.
 
-The primary focus is not predicting match winners. Instead, I quantify how pressure shifts the distribution of individual performance for both batters and bowlers.
+---
 
-⸻
+## Analytical Focus
 
-Batting Outcomes
-	•	Runs scored per innings
-	•	Probability of a low score (runs < 10)
-	•	Variance of runs
-	•	Stage-specific shifts in average performance
-	•	Batting Pressure Impact Index
+This project has two connected components:
 
-⸻
+### 1️⃣ Descriptive Analysis — Performance Risk & Variability
 
-Bowling Outcomes
-	•	Wickets per match
-	•	Economy rate
-	•	Variance of economy
-	•	Probability of a high-cost spell
-	•	Bowling Pressure Impact Index
+The first objective is to quantify how pressure shifts the distribution of individual performance for both batters and bowlers.
 
-⸻
+### Batting Outcomes
+- Runs scored per match  
+- Probability of a low score (runs < 10)  
+- Variance of runs  
+- Stage-specific shifts in average performance  
+- Batting Pressure Impact Index  
 
-Predictive Modeling Extension (Machine Learning)
+### Bowling Outcomes
+- Wickets per match  
+- Economy rate  
+- Variance of economy  
+- Probability of a high-cost spell  
+- Bowling Pressure Impact Index  
 
-In addition to descriptive analysis, this project prepares the dataset for supervised machine learning models that predict player performance under similar match conditions.
+The focus is not on predicting match winners, but on understanding individual performance risk under varying competitive conditions.
 
-Two separate predictive tasks will be developed:
+---
 
-Batting Model
-Goal:
-Predict expected runs scored in a future match given similar circumstances.
+### 2️⃣ Predictive Modeling — Player-Level Regression
 
-Features:
-	•	Historical average runs
-	•	Run variance
-	•	Low-score probability
-	•	Match stage
-	•	Season
-	•	Venue
+The second objective is to build supervised regression models that predict player performance in a future match under similar contextual circumstances.
 
-Target:
-	•	Runs scored
+Two regression tasks are defined:
 
-⸻
+#### Batting Model
 
-Bowling Model
-Goal:
-Predict expected economy rate in a future match under similar circumstances.
+**Goal:** Predict runs scored in a match.
 
-Features:
-	•	Historical economy rate
-	•	Wicket rate
-	•	Dot-ball rate
-	•	Match stage
-	•	Season
-	•	Venue
+**Target Variable:**
+- Runs scored  
 
-Target:
-	•	Economy rate
+**Features:**
+- Historical average runs  
+- Run variance  
+- Low-score probability  
+- Match stage  
+- Season  
+- Venue  
+- Date-derived features (month, weekday)
 
-All models will be trained using only historical matches prior to prediction to avoid data leakage.
+---
 
-⸻
+#### Bowling Model
 
-Time Horizon
+**Goal:** Predict economy rate in a match.
+
+**Target Variable:**
+- Economy rate  
+
+**Features:**
+- Historical economy rate  
+- Wicket rate  
+- Dot-ball rate  
+- Match stage  
+- Season  
+- Venue  
+- Date-derived features
+
+All models are trained using only historical matches prior to prediction to prevent data leakage.
+
+---
+
+## Unit of Analysis
+
+The dataset is structured at the player–match level.  
+Each observation represents a single player’s performance in a specific IPL match.
+
+---
+
+## Time Horizon
 
 The dataset covers IPL seasons from 2008 to 2024.
-All analysis is conducted at the player–match level.
 
-⸻
+All descriptive analysis and predictive modeling are performed using structured historical match data within this period.
 
-Summary
+---
 
-This project combines:
-	•	Structured data acquisition
-	•	Relational database design
-	•	Exploratory risk analysis
-	•	Stage-aware performance comparison
-	•	A modeling-ready machine learning framework
+## Summary
 
+This project integrates:
+
+- Structured data acquisition  
+- Relational database design  
+- Stage-aware performance risk analysis  
+- Feature engineering for regression  
+- Player-level predictive modeling  
+
+The result is a reproducible analytical framework for understanding and predicting player performance under competitive pressure in professional cricket.
