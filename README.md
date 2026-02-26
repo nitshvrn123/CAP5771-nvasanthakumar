@@ -1,172 +1,155 @@
-# IPL Pressure & Performance Risk Analysis
+# IPL Player Performance Under Pressure: Risk Analysis & Regression Modeling
 
-### CAP5771 — Introduction to Data Science  
-University of Florida  
+### CAP5771 — Introduction to Data Science
+University of Florida
 
 ---
 
 ## Project Overview
 
-This project studies how competitive pressure affects player performance in the Indian Premier League (IPL).
-
-Rather than focusing only on average performance, I analyze **performance risk and variability** under high-stakes match conditions.
+This project analyzes how competitive pressure influences player performance in the Indian Premier League (IPL) and builds regression models to predict future performance under similar match conditions.
 
 Competitive pressure is operationalized using tournament stage:
 
-- **League matches** (baseline)
+- **League** (baseline)
 - **Playoffs**
-- **Finals**
+- **Final**
 
-The primary analytical comparison is:
+The dataset spans IPL seasons from **2008–2024** and is derived entirely from structured ball-by-ball match records provided by Cricsheet.
 
-> League vs Pressure Matches (Playoffs + Finals)
+This project integrates:
 
-The dataset covers IPL seasons from **2008 through 2024**, using structured ball-by-ball match data.
+- Pressure-based performance analysis
+- Risk and variability measurement
+- Structured database design
+- Data wrangling and feature engineering
+- Player-level regression modeling
 
-This project is fully reproducible and uses only cricket-derived data (no psychological inference).
+All analysis is fully reproducible using cricket-derived data only.
 
 ---
 
-## Research Question
+## Research Objectives
+
+This project addresses two connected objectives:
+
+---
+
+### 1️⃣ Descriptive Objective — Performance Under Pressure
 
 Do IPL players exhibit higher performance risk and variability in pressure matches compared to league matches?
 
-The analysis is conducted separately for:
+The analysis evaluates stage-based shifts in:
 
-### Batting
-- Average runs per innings  
-- Probability of low score (runs < 10)  
-- Variance of runs  
-- Stage-based Pressure Impact Index  
+#### Batting
+- Average runs per innings
+- Variance of runs
+- Probability of low score (runs < 10)
+- Stage-based Pressure Impact Index
 
-### Bowling
-- Average economy rate  
-- Probability of high-cost spell  
-- Variance of economy  
-- Wickets per match  
-- Stage-based Pressure Impact Index  
+#### Bowling
+- Economy rate
+- Variance of economy
+- Probability of high-cost spell
+- Wickets per match
+- Stage-based Pressure Impact Index
+
+Pressure matches are defined as **Playoffs + Finals**, with League matches serving as the baseline.
+
+---
+
+### 2️⃣ Predictive Objective — Player-Level Regression
+
+In addition to descriptive analysis, this project builds supervised regression models to predict future player performance.
+
+Two separate modeling pipelines are constructed:
+
+#### Batting Regression Model
+**Target:** Runs scored
+
+**Features include:**
+- Historical average runs
+- Run variance
+- Low-score probability
+- Match stage
+- Venue
+- Season
+- Date-derived features (month, weekday)
+
+---
+
+#### Bowling Regression Model
+**Target:** Economy rate
+
+**Features include:**
+- Historical economy rate
+- Wicket rate
+- Dot-ball rate
+- Match stage
+- Venue
+- Season
+- Date-derived features
+
+All features are computed using only historical matches prior to prediction to avoid data leakage.
 
 ---
 
 ## Data Source
 
-All data is derived from:
+All data is obtained from:
 
-**Cricsheet**  
+**Cricsheet**
 https://cricsheet.org
 
-The dataset includes structured ball-by-ball IPL records from 2008–2024.
+The dataset includes IPL ball-by-ball match records from 2008–2024.
 
-Data processing steps:
+Processing steps:
 
-1. Parsed YAML files using Python  
-2. Aggregated to player–match level  
-3. Stored in a structured SQLite relational database  
+1. Parsed YAML files using Python
+2. Aggregated to player–match level
+3. Stored in a structured SQLite relational database
 
 ---
 
 ## Database Design
 
-A SQLite database (`ipl_cricket_only.db`) is used to ensure reproducibility and structured querying.
+A SQLite database (`ipl_cricket_only.db`) ensures structured storage and reproducibility.
 
 Core tables:
 
-- `matches` — Match-level metadata and stage classification  
-- `players` — Standardized player identifiers  
-- `player_match_batting` — Batting performance per match  
-- `player_match_bowling` — Bowling performance per match  
+- `matches`
+- `players`
+- `player_match_batting`
+- `player_match_bowling`
 
-The variable `stage_bucket` (league/playoffs/final) serves as the project’s objective pressure proxy.
+The variable `stage_bucket` (league/playoffs/final) serves as the objective pressure proxy.
 
 A schema diagram (`schema.png`) is included in the repository.
 
 ---
 
-## Data Exploration
+## Data Wrangling Pipeline
 
-Exploratory analysis was conducted using:
+The project includes a reproducible two-stage wrangling process:
 
-- `.head()`
-- `.info()`
-- `.describe()`
-- Duplicate checks
-- Missing value analysis
-- Stage distribution inspection
-- Simple visualizations
+### Part I — Cleaning
+- Data type correction (dates, numeric fields)
+- Duplicate handling (player–match uniqueness)
+- Structural missing value handling
+- Standardization of categorical fields
+- Validation of impossible values
 
-Key observations:
+### Part II — Feature Engineering
+- Derived metrics (e.g., runs per ball)
+- Pressure indicator variables
+- Date feature extraction (month, weekday)
+- Categorical encoding
+- Feature selection for regression
+- Correlation inspection
 
-- League matches dominate the dataset  
-- Finals represent a small percentage of total observations  
-- Missing bowling strike rates are structural (no wicket cases)  
-- Extreme performances are retained as meaningful signals  
-
-No corrections were performed during exploration; issues were documented.
-
----
-
-## Pressure Impact Framework
-
-To quantify stage-based shifts in performance, I constructed a **Pressure Impact Index**.
-
-For batting:
-
-Impact combines:
-- Increase in low-score probability  
-- Decrease in average runs relative to league baseline  
-
-For bowling:
-
-Impact combines:
-- Increase in economy  
-- Increase in high-cost spell probability  
-- Decrease in wicket-taking effectiveness  
-
-Players are categorized as:
-
-- Stable  
-- More risky under pressure  
-- High pressure drop  
-
----
-
-## Machine Learning Extension (Planned)
-
-This project prepares the dataset for predictive modeling.
-
-### Batting Model
-Goal:
-Predict expected runs scored in a future match under similar conditions.
-
-Features:
-- Historical average runs  
-- Variance of runs  
-- Low-score rate  
-- Match stage  
-- Season  
-- Venue  
-
-Target:
-- Runs scored  
-
----
-
-### Bowling Model
-Goal:
-Predict expected economy rate under similar match conditions.
-
-Features:
-- Historical economy  
-- Wicket rate  
-- Dot-ball rate  
-- Match stage  
-- Season  
-- Venue  
-
-Target:
-- Economy rate  
-
-All features will be computed using only historical matches prior to prediction to avoid data leakage.
+This produces two final model-ready datasets:
+- Batting regression dataset
+- Bowling regression dataset
 
 ---
 
@@ -178,68 +161,31 @@ All features will be computed using only historical matches prior to prediction 
 - matplotlib
 - seaborn
 - SQLite
-- scikit-learn (for future ML models)
+- scikit-learn
 
 ---
 
-## How to Run This Project (Google Colab)
-
-This project was developed and executed in Google Colab.
-
-### Steps:
+## How to Run (Google Colab)
 
 1. Open the notebook in Google Colab.
+2. Upload the following files to `/content/`:
 
-2. Upload the Files : matches.csv
-players.csv
-player_match_batting.csv
-player_match_bowling.csv
-mainly : ipl_cricket_only.db
+- `ipl_cricket_only.db`
+- `matches.csv`
+- `players.csv`
+- `player_match_batting.csv`
+- `player_match_bowling.csv`
 
-## Running in Google Colab
-
-running this notebook in Google Colab:
-
-1. Open the notebook in Colab.
-2. Click the folder icon on the left sidebar.
-3. Click “Upload”.
-4. Upload the following files into the root directory:
-
-- ipl_cricket_only.db
-- matches.csv
-- players.csv
-- player_match_batting.csv
-- player_match_bowling.csv
-
-Make sure the files appear directly under `/content/`.
-
-The notebook automatically looks for:
-
-/content/ipl_cricket_only.db
-
-3. Click: Runtime → Run All
+3. Click: **Runtime → Run All**
 
 The notebook will:
-
-- Load the database  
-- Perform exploratory analysis  
-- Compute batting and bowling pressure metrics  
-- Generate visualizations  
-- Construct Pressure Impact Indices  
+- Load the database
+- Perform exploratory analysis
+- Compute pressure metrics
+- Build feature-engineered datasets
+- Prepare regression-ready feature tables
 
 No external APIs or credentials are required.
-
----
-
-## Future Work
-
-Future milestones will extend this work by:
-
-- Building regression models for run prediction  
-- Building regression models for economy prediction  
-- Evaluating model performance across match stages  
-- Investigating interaction effects between venue and pressure  
-- Introducing uncertainty estimation for performance predictions  
 
 ---
 
@@ -247,13 +193,13 @@ Future milestones will extend this work by:
 
 The repository includes:
 
-- Full analysis notebook  
-- SQLite database (or regeneration instructions)  
-- Schema diagram (`schema.png`)  
-- Data dictionary (`data_dictionary.pdf`)  
-- requirements.txt  
+- Full analysis notebook
+- SQLite database (or regeneration instructions)
+- Schema diagram (`schema.png`)
+- Data dictionary (`data_dictionary.pdf`)
+- `requirements.txt`
 
-All analysis is reproducible using only the repository contents.
+All analysis is reproducible directly from repository contents.
 
 ---
 
@@ -261,10 +207,10 @@ All analysis is reproducible using only the repository contents.
 
 This project demonstrates:
 
-- Clear problem formulation  
-- Structured data acquisition  
-- Relational database design  
-- Thoughtful exploratory analysis  
-- A modeling-ready analytical framework  
+- Clear and measurable problem formulation
+- Structured relational database design
+- Transparent data cleaning and feature engineering
+- Pressure-aware performance analysis
+- Role-specific regression modeling framework
 
-It provides a reproducible foundation for studying performance risk under competitive pressure in professional cricket.
+It provides a reproducible foundation for analyzing and predicting player performance under competitive pressure in professional cricket.
