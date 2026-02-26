@@ -1,0 +1,173 @@
+Module 7 — Data Wrangling Part II: Feature Engineering
+
+Project Context
+
+In this stage, I transformed cleaned IPL player–match data into model-ready feature tables for regression modeling.
+
+The predictive objectives are:
+	•	Batting Model → Predict runs scored in the next match
+	•	Bowling Model → Predict economy rate in the next match
+
+Feature engineering was conducted with the goal of constructing a defensible, interpretable, and leakage-safe representation of player skill and match context. The objective was not to maximize feature count, but to build a compact and meaningful feature set aligned with the regression task.
+
+⸻
+
+1️⃣ Features Engineered (and Why)
+
+A. Historical Player Aggregates (Leakage-Safe)
+
+To represent player ability numerically, I created expanding historical aggregates using groupby().expanding().mean().shift().
+
+Batting Features:
+	•	career_avg_runs
+	•	career_std_runs
+	•	last3_avg_runs
+
+Bowling Features:
+	•	career_avg_econ
+	•	career_std_econ
+	•	last3_avg_econ
+
+Justification:
+	•	Career averages represent baseline skill.
+	•	Standard deviation captures performance volatility.
+	•	Rolling 3-match averages capture recent form.
+	•	All aggregates were shifted to ensure no future match information was used (preventing data leakage).
+
+⸻
+
+B. Derived Efficiency Metrics
+
+Batting:
+	•	runs_per_ball
+
+Bowling:
+	•	runs_per_ball
+	•	wicket_rate
+
+Justification:
+	•	Efficiency metrics normalize performance relative to opportunity.
+	•	Ratios often provide stronger predictive signals than raw totals.
+	•	These features improve interpretability and comparability across matches.
+
+⸻
+
+C. Pressure & Context Features
+	•	pressure_flag (1 if playoffs/final, 0 otherwise)
+	•	match_month
+	•	match_weekday
+
+Justification:
+	•	Competitive pressure is central to the research question.
+	•	Month and weekday capture temporal patterns that may influence performance.
+
+⸻
+
+D. Categorical Encoding
+	•	Applied One-Hot Encoding (OHE) to stage_bucket.
+
+Justification:
+	•	Stage is a nominal variable.
+	•	OHE avoids imposing artificial ordinal structure.
+	•	Allows regression models to estimate stage-specific performance effects.
+
+⸻
+
+E. Numeric Transformations
+	•	Applied Z-score standardization to continuous numeric features.
+
+Justification:
+	•	Prevents scale dominance among variables.
+	•	Improves regression model stability.
+	•	Supports convergence for linear models.
+
+⸻
+
+2️⃣ Feature Selection Decisions
+
+The following variables were removed prior to modeling:
+	•	match_id
+	•	player / bowler
+	•	date
+	•	venue
+	•	season
+	•	match_type
+
+Justification:
+	•	match_id is an identifier with no predictive meaning.
+	•	player/bowler names were removed from the model input to avoid overfitting; player identity is instead represented numerically via historical aggregates.
+	•	date was replaced by extracted time features.
+	•	venue was excluded at this stage due to high-cardinality encoding complexity.
+	•	season and match_type were redundant given stage and historical features.
+
+These removals reduce leakage risk, improve generalization, and maintain interpretability.
+
+⸻
+
+3️⃣ Before vs After Summary
+
+Column Counts
+
+After feature engineering and selection:
+	•	Batting model columns: 13
+	•	Bowling model columns: 20
+
+These counts include:
+	•	Regression target variable
+	•	Historical aggregates
+	•	Rolling features
+	•	Efficiency ratios
+	•	Encoded categorical variables
+	•	Context features
+
+Identifier-based columns were removed and replaced with structured numeric representations.
+
+⸻
+
+Missingness
+
+Historical aggregate columns contain NaN values for early-career matches due to shifting.
+This is expected and reflects lack of prior history rather than data error.
+No artificial imputation was performed to preserve data integrity.
+
+⸻
+
+4️⃣ Risk & Interpretation Considerations
+	•	Early-career observations have limited historical data.
+	•	Finals contain fewer observations than league matches.
+	•	Player identity is represented numerically rather than categorically to reduce overfitting risk.
+	•	Venue was excluded to avoid introducing high-cardinality bias.
+
+Future work may incorporate venue encoding with regularization methods.
+
+⸻
+
+5️⃣ Final Outputs
+
+Two model-ready regression datasets were produced:
+	•	batting_model_ready.csv
+	•	bowling_model_ready.csv
+
+Each dataset contains:
+	•	Encoded categorical features
+	•	Standardized numeric features
+	•	Leakage-safe historical aggregates
+	•	Continuous regression target variable
+	•	No identifier columns in the modeling matrix
+
+⸻
+
+Conclusion
+
+This feature engineering stage successfully transformed cleaned IPL match data into structured, interpretable, and reproducible model-ready datasets.
+
+All transformations were:
+	•	Explicitly documented
+	•	Justified
+	•	Leakage-safe
+	•	Reproducible within the pipeline
+
+This completes Module 7 requirements for regression-based modeling of player performance.
+
+⸻
+
