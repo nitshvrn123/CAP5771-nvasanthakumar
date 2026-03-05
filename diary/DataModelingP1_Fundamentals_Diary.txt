@@ -1,0 +1,26 @@
+DIARY ENTRY — MODULE 9  
+Data Modeling Part I: Fundamentals
+
+In this module, I transitioned from data wrangling and feature engineering to the modeling phase of the project. The goal was to train baseline machine learning models that can predict player performance using the engineered feature datasets.
+
+I developed two separate regression models corresponding to the two analytical objectives of the project.
+
+The first model predicts batting performance. The target variable is the number of runs scored by a batter in a match. Because runs are a continuous numeric variable, this problem is formulated as a regression task. I selected Linear Regression as the first model because it is simple, interpretable, and appropriate as a baseline model for continuous prediction tasks. Linear regression allows us to understand the relationship between the input features and the predicted output while establishing a benchmark for future models.
+
+The second model predicts bowling performance. The target variable is bowling economy rate, which measures the average number of runs conceded per over. Economy rate is also a continuous variable, making this another regression problem. I again used Linear Regression as the baseline model to maintain consistency and interpretability.
+
+The features used for the models include player identity, match context variables, and engineered numeric features. Contextual variables include venue, match type, season, and tournament stage. Numeric features include statistics such as balls faced, strike rate, wickets, dot-ball rate, and other performance-related metrics. Date features were also transformed into numeric representations such as match year, match month, and match weekday to allow the models to capture temporal patterns.
+
+To properly evaluate model performance, I implemented a three-way data split. The dataset was divided into training, validation, and test sets. The training set contains 70% of the data and is used to fit the model parameters. The remaining 30% was split evenly between validation and test sets, resulting in approximately 15% validation data and 15% test data.
+
+The validation set is used to diagnose model behavior and check for potential overfitting or underfitting. The test set is reserved for final evaluation to estimate how well the model generalizes to unseen matches.
+
+Model performance was evaluated using three standard regression metrics: Mean Absolute Error (MAE), Root Mean Squared Error (RMSE), and the coefficient of determination (R²). These metrics provide different perspectives on prediction accuracy and variance explained by the model.
+
+For the batting model, the training, validation, and test scores were very similar, with R² values around 0.92. This indicates that the model explains a large proportion of the variance in runs and generalizes well across the data splits. The similarity between training and validation performance suggests that the model is not severely overfitting.
+
+For the bowling model, the R² values were approximately 0.89 on the training set and around 0.86 on validation and test sets. This again indicates strong predictive performance and good generalization. The validation and test results being close to each other suggests that the model behaves consistently on unseen data.
+
+In addition to numerical metrics, I visualized the predictions using Actual vs Predicted scatter plots and residual plots for both batting and bowling models. These visualizations help diagnose whether the model captures the general trend in the data and whether prediction errors appear randomly distributed.
+
+Overall, Linear Regression provides a strong and interpretable baseline model for predicting both batting runs and bowling economy rate. In future iterations of the project, more complex models such as regularized regression or tree-based models may be explored to further improve predictive performance.
