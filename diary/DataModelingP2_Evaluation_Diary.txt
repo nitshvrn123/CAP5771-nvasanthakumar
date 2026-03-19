@@ -1,0 +1,52 @@
+DIARY ENTRY: DATA MODELING PART II — EVALUATION AND INTERPRETATION
+
+In this module, I focused on evaluating multiple regression models for both batting and bowling prediction tasks and understanding how well they generalize to unseen data.
+
+Evaluation Metrics
+
+Since both tasks are regression problems (predicting runs and economy rate), I used the following evaluation metrics:
+- Mean Absolute Error (MAE): measures average prediction error in the same units as the target
+- Root Mean Squared Error (RMSE): penalizes larger errors more strongly
+- R² Score: measures how well the model explains variance in the data
+
+These metrics are appropriate because they provide both interpretability (MAE) and sensitivity to large errors (RMSE), while R² gives an overall goodness-of-fit measure.
+
+Baseline Model Comparison
+
+I first trained a Linear Regression model as a baseline.
+
+For batting:
+- The model performed strongly with test R² ≈ 0.89
+- Training and validation performance were very close, indicating good generalization
+
+For bowling:
+- The model showed a drop from training to validation (R² ≈ 0.89 → 0.75)
+- This indicates that bowling performance is harder to model and more variable
+
+Model Improvements
+
+I then evaluated additional models including Ridge, Lasso, Elastic Net, Random Forest, and Gradient Boosting.
+
+For batting:
+- Random Forest performed best among reliable models (test R² ≈ 0.97)
+- Ridge and Linear Regression also performed well, indicating stable and predictable relationships
+- This suggests batting performance benefits from capturing nonlinear patterns
+
+For bowling:
+- Ridge Regression performed best (test R² ≈ 0.86)
+- Random Forest and other complex models performed worse
+- This suggests bowling performance is noisier and benefits from regularization rather than complexity
+
+Gradient Boosting achieved extremely high performance (R² ≈ 0.99). However, such near-perfect results suggest possible data leakage or overly predictive features. Therefore, these results were treated with caution and not relied upon for final conclusions.
+
+Feature Importance Insights
+
+From tree-based models such as Random Forest, feature importance indicates that historical performance metrics (such as averages and consistency-related features) play a major role in prediction. This suggests that past performance is a strong indicator of future outcomes, especially for batting.
+
+Conclusion
+
+This evaluation highlights that different tasks require different modeling approaches. Batting performance is more stable and benefits from flexible, nonlinear models, while bowling performance is more variable and better modeled using regularized linear approaches.
+
+Additionally, the use of a chronological train/validation/test split ensures that evaluation reflects real-world predictive performance and avoids data leakage.
+
+Overall, the modeling process demonstrates the importance of comparing models, selecting appropriate metrics, and interpreting results in the context of the problem.
