@@ -1,26 +1,180 @@
-DIARY ENTRY — MODULE 9  
-Data Modeling Part I: Fundamentals
+DataModelingP1_Fundamentals_Diary.txt
+=======================================
+Module 8 — Data Modeling Part I: Fundamentals
+Date: March 2026
 
-In this module, I transitioned from data wrangling and feature engineering to the modeling phase of the project. The goal was to train baseline machine learning models that can predict player performance using the engineered feature datasets.
+================================================================
+WHICH MODELS DID I CHOOSE FIRST AND WHY?
+================================================================
 
-I developed two separate regression models corresponding to the two analytical objectives of the project.
+In this module I transitioned from data wrangling and feature
+engineering to the modeling phase of the project. The goal was
+to train baseline machine learning models that can predict
+player performance using the engineered feature datasets.
 
-The first model predicts batting performance. The target variable is the number of runs scored by a batter in a match. Because runs are a continuous numeric variable, this problem is formulated as a regression task. I selected Linear Regression as the first model because it is simple, interpretable, and appropriate as a baseline model for continuous prediction tasks. Linear regression allows us to understand the relationship between the input features and the predicted output while establishing a benchmark for future models.
+I developed two separate regression models corresponding to
+the two analytical objectives of the project.
 
-The second model predicts bowling performance. The target variable is bowling economy rate, which measures the average number of runs conceded per over. Economy rate is also a continuous variable, making this another regression problem. I again used Linear Regression as the baseline model to maintain consistency and interpretability.
+The first model predicts batting performance. The target
+variable is runs scored by a batter in a match. Because runs
+are a continuous numeric variable this problem is formulated
+as a regression task. I selected Linear Regression as the
+first model because:
+- It is the simplest and most interpretable model available
+- It establishes a performance baseline all other models must beat
+- It is computationally fast on a dataset of 16,515 rows
+- It makes the fewest assumptions about the data structure
+- It is appropriate for continuous prediction targets
 
-The features used for the models include player identity, match context variables, and engineered numeric features. Contextual variables include venue, match type, season, and tournament stage. Numeric features include statistics such as balls faced, strike rate, wickets, dot-ball rate, and other performance-related metrics. Date features were also transformed into numeric representations such as match year, match month, and match weekday to allow the models to capture temporal patterns.
+The second model predicts bowling performance. The target
+variable is economy rate — the average runs conceded per over.
+Economy rate is also a continuous variable making this another
+regression problem. Linear Regression was again used as the
+baseline model for consistency and interpretability.
 
-To properly evaluate model performance, I implemented a three-way data split. The dataset was divided into training, validation, and test sets. The training set contains 70% of the data and is used to fit the model parameters. The remaining 30% was split evenly between validation and test sets, resulting in approximately 15% validation data and 15% test data.
+================================================================
+WHAT ASSUMPTIONS DOES THE MODEL MAKE?
+================================================================
 
-The validation set is used to diagnose model behavior and check for potential overfitting or underfitting. The test set is reserved for final evaluation to estimate how well the model generalizes to unseen matches.
+Linear Regression assumes:
 
-Model performance was evaluated using three standard regression metrics: Mean Absolute Error (MAE), Root Mean Squared Error (RMSE), and the coefficient of determination (R²). These metrics provide different perspectives on prediction accuracy and variance explained by the model.
+1. A linear relationship between features and the target variable.
+   This assumption is likely violated for batting since player
+   performance has nonlinear interactions with venue and stage.
 
-For the batting model, the training, validation, and test scores were very similar, with R² values around 0.92. This indicates that the model explains a large proportion of the variance in runs and generalizes well across the data splits. The similarity between training and validation performance suggests that the model is not severely overfitting.
+2. Independence of observations. Each match row is treated
+   as independent which is a reasonable approximation for
+   cross-sectional match data.
 
-For the bowling model, the R² values were approximately 0.89 on the training set and around 0.86 on validation and test sets. This again indicates strong predictive performance and good generalization. The validation and test results being close to each other suggests that the model behaves consistently on unseen data.
+3. Homoscedasticity — constant variance of errors across all
+   predictions. Batting runs have high variance at the upper
+   end which may violate this assumption.
 
-In addition to numerical metrics, I visualized the predictions using Actual vs Predicted scatter plots and residual plots for both batting and bowling models. These visualizations help diagnose whether the model captures the general trend in the data and whether prediction errors appear randomly distributed.
+4. No severe multicollinearity between input features.
+   Some features like balls and strike_rate are correlated
+   which may affect coefficient stability.
 
-Overall, Linear Regression provides a strong and interpretable baseline model for predicting both batting runs and bowling economy rate. In future iterations of the project, more complex models such as regularized regression or tree-based models may be explored to further improve predictive performance.
+These assumptions motivated the later evaluation of Ridge
+and Lasso regression which relax the multicollinearity
+concern through regularisation.
+
+================================================================
+WHAT SPLIT DID I CHOOSE AND WHY?
+================================================================
+
+I implemented two split strategies:
+
+Strategy 1 — Random 70/15/15 split for initial baseline:
+- 70% training : 11,560 rows
+- 15% validation: 2,477 rows
+- 15% test      : 2,478 rows
+
+This was used for early exploration to quickly establish
+baseline performance numbers.
+
+Strategy 2 — Time-based chronological split for all final models:
+- Train      : seasons 2008–2021 (13,071 rows)
+- Validation : season 2022      (1,158 rows)
+- Test        : seasons 2023–2024 (2,286 rows)
+
+The time-based split is more appropriate for sports data because:
+- It mirrors real-world usage — we always predict future matches
+  from past history only
+- A random split would allow future seasons to appear in training,
+  giving the model information it cannot have at prediction time
+- It tests genuine generalisation across time rather than just
+  across randomly sampled rows
+
+The time-based split was used for all final model comparisons
+and reported results.
+
+================================================================
+BASELINE MODEL RESULTS
+================================================================
+
+Batting — Linear Regression (Time-Based Split):
+  Train R²: 0.9244 | MAE: 3.97 | RMSE: 5.79
+  Val R²  : 0.9232 | MAE: 4.25 | RMSE: 5.96
+  Test R² : 0.8931 | MAE: 5.22 | RMSE: 7.45
+
+Bowling — Linear Regression (Time-Based Split):
+  Train R²: 0.8896 | MAE: 0.54 | RMSE: 0.98
+  Val R²  : 0.7696 | MAE: 0.89 | RMSE: 1.50
+  Test R² : 0.7547 | MAE: 1.17 | RMSE: 1.64
+
+The batting model shows Train and Val R² very close together
+(0.9244 vs 0.9232) indicating good generalisation with no
+severe overfitting. The test R² drop to 0.8931 reflects the
+model being evaluated on the most recent unseen seasons.
+
+The bowling model shows a larger drop from Train to Val
+(0.8896 → 0.7696) indicating that bowling performance is
+harder to model and more variable across seasons.
+
+================================================================
+DIAGNOSING UNDERFITTING VS OVERFITTING
+================================================================
+
+Batting model diagnosis:
+  Train R²: 0.9244 | Test R²: 0.8931 | Gap: 0.0313
+  Gap is small → model is generalising well
+  Conclusion: slight underfitting remains — nonlinear
+  models may capture additional patterns
+
+Bowling model diagnosis:
+  Train R²: 0.8896 | Test R²: 0.7547 | Gap: 0.1349
+  Gap is moderate → mild overfitting on training seasons
+  Conclusion: regularisation may help by preventing the
+  model from overfitting to specific bowler-venue combinations
+
+================================================================
+BIAS-VARIANCE TRADEOFF
+================================================================
+
+The bias-variance tradeoff describes the tension between two
+sources of prediction error:
+
+Bias — error from overly simplistic assumptions.
+A high-bias model underfits and misses real patterns.
+Linear Regression has moderate bias here because batting
+performance has nonlinear relationships it cannot capture.
+
+Variance — error from sensitivity to training data.
+A high-variance model overfits and memorises training data
+but fails on new data. Later, Gradient Boosting showed
+near-perfect training scores (R² > 0.99) demonstrating
+high variance from in-match leakage features.
+
+The Goldilocks principle: we want a model complex enough
+to capture real patterns but simple enough to generalise.
+Random Forest with max_depth=5 strikes this balance:
+  Train R²: 0.96 | Test R²: 0.95 | Gap: 0.01
+
+================================================================
+WHAT RISKS REMAIN?
+================================================================
+
+1. Data leakage risk:
+   Features like balls, strike_rate and runs_conceded are
+   in-match statistics. They describe outcomes of the match
+   being predicted. The high R² scores may be partly inflated
+   by this leakage. This was investigated and documented as
+   a project limitation.
+
+2. Temporal drift risk:
+   Player form changes over time. A model trained on 2008-2021
+   data may not fully capture 2024 playing styles and conditions.
+
+3. Missing context risk:
+   Pitch conditions, weather, toss result and opposition
+   lineup strength are not in the dataset. These factors
+   significantly influence match outcomes in cricket.
+
+================================================================
+NEXT STEPS
+================================================================
+
+In Module 9 I will evaluate additional models including Ridge,
+Lasso, Elastic Net, Random Forest and Gradient Boosting to
+determine whether more complex models improve generalisation
+and whether regularisation helps the bowling task specifically.
