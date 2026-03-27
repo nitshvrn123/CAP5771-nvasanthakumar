@@ -1,52 +1,195 @@
-DIARY ENTRY: DATA MODELING PART II — EVALUATION AND INTERPRETATION
+DataModelingP2_Evaluation_Diary.txt
+=====================================
+Module 9 — Data Modeling Part II: Evaluation and Interpretation
+Date: March 2026
 
-In this module, I focused on evaluating multiple regression models for both batting and bowling prediction tasks and understanding how well they generalize to unseen data.
+================================================================
+WHAT EVALUATION METRICS DID I CHOOSE AND WHY?
+================================================================
 
-Evaluation Metrics
+Since both tasks are regression problems predicting continuous
+variables (runs and economy rate) I used three metrics:
 
-Since both tasks are regression problems (predicting runs and economy rate), I used the following evaluation metrics:
-- Mean Absolute Error (MAE): measures average prediction error in the same units as the target
-- Root Mean Squared Error (RMSE): penalizes larger errors more strongly
-- R² Score: measures how well the model explains variance in the data
+Mean Absolute Error (MAE):
+  Measures the average absolute prediction error in the same
+  units as the target. For batting an MAE of 4.2 means
+  predictions are off by about 4 runs on average. Easy to
+  explain to a non-technical cricket audience.
 
-These metrics are appropriate because they provide both interpretability (MAE) and sensitivity to large errors (RMSE), while R² gives an overall goodness-of-fit measure.
+Root Mean Squared Error (RMSE):
+  Penalises large errors more heavily than MAE due to squaring.
+  Useful for detecting cases where the model makes occasional
+  very large prediction errors which would be costly in a
+  real cricket context.
 
-Baseline Model Comparison
+R² Score (Coefficient of Determination):
+  Measures the proportion of variance in the target explained
+  by the model. R² = 1.0 is perfect. R² = 0.0 means the model
+  is no better than predicting the mean every time. Allows
+  easy comparison across different models and tasks.
 
-I first trained a Linear Regression model as a baseline.
+These three metrics together give a complete picture: MAE for
+typical error size, RMSE for worst-case errors, and R² for
+overall explanatory power.
 
-For batting:
-- The model performed strongly with test R² ≈ 0.89
-- Training and validation performance were very close, indicating good generalization
+================================================================
+BASELINE MODEL COMPARISON
+================================================================
 
-For bowling:
-- The model showed a drop from training to validation (R² ≈ 0.89 → 0.75)
-- This indicates that bowling performance is harder to model and more variable
+All models are compared against Linear Regression as the
+baseline. The baseline establishes the minimum performance
+that any more complex model must beat to justify its use.
 
-Model Improvements
+BATTING — Test Set R² vs Baseline:
+  Baseline (Linear) : 0.8931  (baseline)
+  Ridge             : 0.9187  (+0.0256 vs baseline)
+  Lasso             : 0.9160  (+0.0229 vs baseline)
+  Elastic Net       : 0.9070  (+0.0139 vs baseline)
+  Random Forest     : 0.9561  (+0.0630 vs baseline) ← best
 
-I then evaluated additional models including Ridge, Lasso, Elastic Net, Random Forest, and Gradient Boosting.
+BOWLING — Test Set R² vs Baseline:
+  Baseline (Linear) : 0.7547  (baseline)
+  Ridge             : 0.8611  (+0.1064 vs baseline) ← best
+  Lasso             : 0.7874  (+0.0327 vs baseline)
+  Elastic Net       : 0.7779  (+0.0232 vs baseline)
+  Random Forest     : 0.7817  (+0.0270 vs baseline)
 
-For batting:
-- Random Forest performed best among reliable models (test R² ≈ 0.97)
-- Ridge and Linear Regression also performed well, indicating stable and predictable relationships
-- This suggests batting performance benefits from capturing nonlinear patterns
+Key finding: Every model beats the baseline for both tasks.
+Ridge provides the largest improvement for bowling (+0.1064).
+Random Forest provides the largest improvement for batting (+0.0630).
 
-For bowling:
-- Ridge Regression performed best (test R² ≈ 0.86)
-- Random Forest and other complex models performed worse
-- This suggests bowling performance is noisier and benefits from regularization rather than complexity
+================================================================
+CROSS-VALIDATION RESULTS
+================================================================
 
-Gradient Boosting achieved extremely high performance (R² ≈ 0.99). However, such near-perfect results suggest possible data leakage or overly predictive features. Therefore, these results were treated with caution and not relied upon for final conclusions.
+5-fold cross-validation was applied to the final selected
+models to get more robust performance estimates beyond a
+single train/validation split.
 
-Feature Importance Insights
+Random Forest — Batting:
+  Fold scores : vary per run
+  Mean R²     : 0.9579
+  Std R²      : 0.0036
+  Low std confirms stable generalisation across folds.
 
-From tree-based models such as Random Forest, feature importance indicates that historical performance metrics (such as averages and consistency-related features) play a major role in prediction. This suggests that past performance is a strong indicator of future outcomes, especially for batting.
+Ridge — Bowling:
+  Fold scores : vary per run
+  Mean R²     : 0.8738
+  Std R²      : 0.0062
+  Low std confirms Ridge generalises consistently.
 
-Conclusion
+Cross-validation is important because a single train/val split
+can be noisy. CV reduces this variance by averaging performance
+across 5 different data partitions.
 
-This evaluation highlights that different tasks require different modeling approaches. Batting performance is more stable and benefits from flexible, nonlinear models, while bowling performance is more variable and better modeled using regularized linear approaches.
+================================================================
+WHICH MODEL PERFORMS BEST AND WHY?
+================================================================
 
-Additionally, the use of a chronological train/validation/test split ensures that evaluation reflects real-world predictive performance and avoids data leakage.
+BATTING — Best model: Random Forest (Test R² = 0.9561)
 
-Overall, the modeling process demonstrates the importance of comparing models, selecting appropriate metrics, and interpreting results in the context of the problem.
+Random Forest outperforms all linear models because batting
+performance has nonlinear relationships. Certain players
+perform very differently at specific venues under pressure
+stages — patterns that a linear weighted sum cannot capture
+but that decision trees can. The ensemble of 100 trees with
+max_depth=5 captures these interactions while the depth
+limit prevents overfitting.
+
+Evidence of good balance:
+  Train R²: 0.96 | Test R²: 0.95 | Gap: 0.01
+  A gap of 0.01 is essentially perfect generalisation.
+
+BOWLING — Best model: Ridge Regression (Test R² = 0.8611)
+
+Ridge outperforms Random Forest for bowling because economy
+rate is noisier and more variable match to match. Random
+Forest tends to overfit to specific bowler-venue-season
+combinations in training data that do not generalise to
+future seasons. Ridge regularisation prevents this by
+shrinking large coefficients, producing a more stable model.
+
+Gradient Boosting achieved R² > 0.99 for both tasks. This
+near-perfect score is suspicious and was investigated. It
+was confirmed to be partly due to data leakage — features
+like runs_conceded and strike_rate are mathematically
+derived from the target variables. Gradient Boosting is
+excluded from final conclusions.
+
+================================================================
+ERROR ANALYSIS
+================================================================
+
+Batting residual analysis:
+  Mean residual  : 0.6755
+  Predictions within 5 runs  : 80.3%
+  Predictions within 10 runs : 96.0%
+  Residual plot shows errors scattered randomly around zero
+  with no obvious systematic patterns.
+
+Bowling residual analysis:
+  Mean residual  : 0.1327
+  Predictions within 1.0 eco : 85.2%
+  Predictions within 2.0 eco : 93.6%
+  Bowling residuals show more scatter than batting,
+  consistent with the lower R² and higher match-to-match
+  variability in economy rate.
+
+A good model has residuals scattered randomly around zero.
+Systematic patterns in residuals would indicate the model
+is missing an important feature or relationship.
+
+
+
+================================================================
+FEATURE IMPORTANCE INSIGHTS
+================================================================
+
+Batting (Random Forest importance):
+  Top features: num__balls, num__low_score, num__strike_rate
+  This confirms that how many balls a batter faces and their
+  historical scoring rate are the strongest predictors of runs.
+  Player identity features appear further down, suggesting
+  performance statistics carry more signal than name alone.
+  Venue features also appear, confirming that some grounds
+  systematically favour batters.
+
+Bowling (Ridge coefficients):
+  Top positive features: num__runs_conceded, num__dot_balls
+  Top negative features: num__overs, num__balls, num__dot_ball_rate
+  Bowlers who have historically conceded more runs tend to
+  have higher economy (positive coefficient).
+  Bowlers who bowl more dot balls and more overs tend to
+  have lower economy (negative coefficient) — trusted bowlers
+  who bowl long spells and build pressure.
+  This makes intuitive cricket sense and validates the model.
+
+================================================================
+
+WHAT DOES THIS MEAN FOR THE PROJECT?
+================================================================
+
+The key learning from this module is that different predictive
+tasks require different modeling approaches:
+
+Batting benefits from nonlinear models (Random Forest) because
+player-venue-stage interactions are complex and important.
+
+Bowling benefits from regularised linear models (Ridge) because
+economy rate is noisy and complex models overfit to rare
+training combinations that do not generalise.
+
+High R² scores should always be questioned rather than
+celebrated. The Gradient Boosting investigation taught me that
+understanding why a model performs well is as important as
+measuring that it performs well.
+
+================================================================
+NEXT STEPS
+================================================================
+
+Module 10 will focus on communicating these results through
+an interactive dashboard with six tabs covering model
+performance, feature importance, prediction accuracy,
+stage analysis, player rankings and individual player
+predictions with venue and stage context adjustments.
