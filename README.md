@@ -295,7 +295,7 @@ venue adjustment plus stage adjustment.
 | Ridge Regression | Batting | 0.9187 |
 | Lasso Regression | Batting | 0.9160 |
 | Elastic Net | Batting | 0.9070 |
-| Random Forest | Batting (best) | 0.9561 |
+| Random Forest | Batting (best) | 0.9506 |
 | Linear Regression | Bowling (baseline) | 0.7547 |
 | Ridge Regression | Bowling (best) | 0.8611 |
 | Lasso Regression | Bowling | 0.7874 |
