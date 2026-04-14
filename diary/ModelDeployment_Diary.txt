@@ -1,0 +1,60 @@
+# Model Deployment Week Diary
+
+## 1. Difference between joblib and pickle
+
+Both joblib and pickle are used for serializing Python objects, including machine learning models.
+
+- pickle is a general-purpose serialization library.
+- joblib is optimized for large numerical data and NumPy arrays.
+
+pickle is simpler, while joblib is more efficient for large models.
+
+---
+
+## 2. Which one did you use and why?
+
+I used pickle to save and load my models.
+
+Reason:
+- The models were not very large.
+- pickle integrates easily with Python and scikit-learn.
+- It simplifies deployment without extra dependencies.
+
+---
+
+## 3. Was your model reproducible in a different notebook?
+
+Yes, the model was reproducible in a separate notebook.
+
+Steps taken:
+- Loaded models using pickle.load()
+- Loaded feature columns (bat_features and bowl_features)
+- Recreated required features like season_year
+- Ensured input structure matched training
+- Ran predictions for both new and existing players
+
+---
+
+## 4. Verification of reproducibility
+
+Predictions from the deployment notebook were compared with the Streamlit dashboard.
+
+- Base predictions matched
+- Adjustment values matched
+- Final predictions matched (minor rounding differences)
+
+This confirms that the model works independently of the training notebook.
+
+---
+
+## 5. Key learning
+
+A trained model alone is not enough for deployment.
+
+It is necessary to:
+- Maintain consistent feature engineering
+- Match input structure exactly
+- Ensure the full pipeline works outside the training environment
+
+This process highlighted the importance of reproducibility in machine learning systems.
+
