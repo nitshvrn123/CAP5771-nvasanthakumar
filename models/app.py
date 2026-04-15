@@ -4,10 +4,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pickle
 import warnings
+from pathlib import Path
 
 from sklearn.metrics import r2_score, mean_absolute_error
 
 warnings.filterwarnings("ignore")
+
+BASE_DIR = Path(__file__).resolve().parent
 
 # ══════════════════════════════════════════════════════════════════════════
 # PAGE CONFIG
@@ -25,10 +28,9 @@ st.set_page_config(
 
 @st.cache_data
 def load_data():
-    batting = pd.read_csv("batting_clean.csv")
-    bowling = pd.read_csv("bowling_clean.csv")
+    batting = pd.read_csv(BASE_DIR / "batting_clean.csv")
+    bowling = pd.read_csv(BASE_DIR / "bowling_clean.csv")
 
-    # Add date-based features if date exists
     if "date" in batting.columns:
         batting["date"] = pd.to_datetime(batting["date"], errors="coerce")
         batting["match_year"] = batting["date"].dt.year
@@ -43,7 +45,6 @@ def load_data():
         bowling["match_weekday"] = bowling["date"].dt.weekday
         bowling = bowling.drop(columns=["date"], errors="ignore")
 
-    # Add season_year if needed
     if "season_year" not in batting.columns:
         batting["season_year"] = batting["season"].astype(str).str[:4].astype(int)
 
@@ -59,31 +60,31 @@ def load_data():
 
 @st.cache_resource
 def load_artifacts():
-    with open("bat_model.pkl", "rb") as f:
+    with open(BASE_DIR / "bat_model.pkl", "rb") as f:
         bat_linear = pickle.load(f)
-    with open("ridge_bat.pkl", "rb") as f:
+    with open(BASE_DIR / "ridge_bat.pkl", "rb") as f:
         bat_ridge = pickle.load(f)
-    with open("lasso_bat.pkl", "rb") as f:
+    with open(BASE_DIR / "lasso_bat.pkl", "rb") as f:
         bat_lasso = pickle.load(f)
-    with open("elastic_bat.pkl", "rb") as f:
+    with open(BASE_DIR / "elastic_bat.pkl", "rb") as f:
         bat_elastic = pickle.load(f)
-    with open("rf_bat.pkl", "rb") as f:
+    with open(BASE_DIR / "rf_bat.pkl", "rb") as f:
         bat_rf = pickle.load(f)
 
-    with open("bowl_model.pkl", "rb") as f:
+    with open(BASE_DIR / "bowl_model.pkl", "rb") as f:
         bowl_linear = pickle.load(f)
-    with open("ridge_bowl.pkl", "rb") as f:
+    with open(BASE_DIR / "ridge_bowl.pkl", "rb") as f:
         bowl_ridge = pickle.load(f)
-    with open("lasso_bowl.pkl", "rb") as f:
+    with open(BASE_DIR / "lasso_bowl.pkl", "rb") as f:
         bowl_lasso = pickle.load(f)
-    with open("elastic_bowl.pkl", "rb") as f:
+    with open(BASE_DIR / "elastic_bowl.pkl", "rb") as f:
         bowl_elastic = pickle.load(f)
-    with open("rf_bowl.pkl", "rb") as f:
+    with open(BASE_DIR / "rf_bowl.pkl", "rb") as f:
         bowl_rf = pickle.load(f)
 
-    with open("bat_features.pkl", "rb") as f:
+    with open(BASE_DIR / "bat_features.pkl", "rb") as f:
         bat_features = pickle.load(f)
-    with open("bowl_features.pkl", "rb") as f:
+    with open(BASE_DIR / "bowl_features.pkl", "rb") as f:
         bowl_features = pickle.load(f)
 
     return (
@@ -101,7 +102,6 @@ batting_clean, bowling_clean = load_data()
     bat_features, bowl_features
 ) = load_artifacts()
 
-# Convenient refs
 batting_players = sorted(batting_clean["player"].dropna().unique().tolist())
 bowling_players = sorted(bowling_clean["bowler"].dropna().unique().tolist())
 venues = sorted(batting_clean["venue"].dropna().unique().tolist())
@@ -113,11 +113,9 @@ match_types = sorted(batting_clean["match_type"].dropna().unique().tolist())
 
 def align_features(df, feature_list):
     X = df.copy()
-
     for col in feature_list:
         if col not in X.columns:
             X[col] = np.nan
-
     X = X[feature_list]
     return X
 
@@ -340,37 +338,24 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "🏏 Player Prediction"
 ])
 
-# Shared test sets
 X_test_bat, y_test_bat, X_test_bowl, y_test_bowl = make_test_sets()
 
-# ── Tab 1 — Model Performance ──────────────────────────────────────────────
+# ── Tab 1 ──────────────────────────────────────────────────────────────────
 with tab1:
     st.subheader("Model Performance Overview")
     st.caption("All five saved models evaluated on test set (seasons 2023–2024)")
 
     models_bat = {
-        "Linear": bat_linear,
-        "Ridge": bat_ridge,
-        "Lasso": bat_lasso,
-        "Elastic Net": bat_elastic,
-        "Random Forest": bat_rf,
+        "Linear": bat_linear, "Ridge": bat_ridge, "Lasso": bat_lasso,
+        "Elastic Net": bat_elastic, "Random Forest": bat_rf,
     }
     models_bowl = {
-        "Linear": bowl_linear,
-        "Ridge": bowl_ridge,
-        "Lasso": bowl_lasso,
-        "Elastic Net": bowl_elastic,
-        "Random Forest": bowl_rf,
+        "Linear": bowl_linear, "Ridge": bowl_ridge, "Lasso": bowl_lasso,
+        "Elastic Net": bowl_elastic, "Random Forest": bowl_rf,
     }
 
-    bat_scores = {
-        k: round(r2_score(y_test_bat, v.predict(X_test_bat)), 4)
-        for k, v in models_bat.items()
-    }
-    bowl_scores = {
-        k: round(r2_score(y_test_bowl, v.predict(X_test_bowl)), 4)
-        for k, v in models_bowl.items()
-    }
+    bat_scores = {k: round(r2_score(y_test_bat, v.predict(X_test_bat)), 4) for k, v in models_bat.items()}
+    bowl_scores = {k: round(r2_score(y_test_bowl, v.predict(X_test_bowl)), 4) for k, v in models_bowl.items()}
 
     col1, col2 = st.columns(2)
 
@@ -406,7 +391,6 @@ with tab1:
 
     best_bat = max(bat_scores, key=bat_scores.get)
     best_bowl = max(bowl_scores, key=bowl_scores.get)
-
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Best Batting Model", best_bat, f"R² = {bat_scores[best_bat]}")
     c2.metric("Best Bowling Model", best_bowl, f"R² = {bowl_scores[best_bowl]}")
@@ -414,7 +398,7 @@ with tab1:
     c4.metric("Bowling Improvement", f"+{bowl_scores[best_bowl] - bowl_scores['Linear']:.4f}", "vs Linear baseline")
 
 
-# ── Tab 2 — Feature Importance ─────────────────────────────────────────────
+# ── Tab 2 ──────────────────────────────────────────────────────────────────
 with tab2:
     st.subheader("Feature Importance Analysis")
     col1, col2 = st.columns(2)
@@ -423,10 +407,8 @@ with tab2:
         st.caption("Batting — Random Forest Feature Importance")
         importances = bat_rf.named_steps["model"].feature_importances_
         feat_names = bat_rf.named_steps["preprocess"].get_feature_names_out()
-        fi_bat = pd.DataFrame({
-            "feature": feat_names,
-            "importance": importances
-        }).sort_values("importance", ascending=False).head(10)
+        fi_bat = pd.DataFrame({"feature": feat_names, "importance": importances})\
+            .sort_values("importance", ascending=False).head(10)
 
         fig, ax = plt.subplots(figsize=(7, 5))
         colors = ["#1D4ED8" if i == 0 else "#3B82F6" if i < 3 else "#BFDBFE" for i in range(len(fi_bat))]
@@ -444,9 +426,7 @@ with tab2:
         coefs = bowl_ridge.named_steps["model"].coef_
         feat_names = bowl_ridge.named_steps["preprocess"].get_feature_names_out()
         fi_bowl = pd.DataFrame({
-            "feature": feat_names,
-            "coefficient": coefs,
-            "abs_importance": np.abs(coefs)
+            "feature": feat_names, "coefficient": coefs, "abs_importance": np.abs(coefs)
         }).sort_values("abs_importance", ascending=False).head(10)
 
         colors = ["#10B981" if v >= 0 else "#EF4444" for v in fi_bowl["coefficient"]]
@@ -462,7 +442,7 @@ with tab2:
         st.caption("🟢 Green = increases economy | 🔴 Red = decreases economy")
 
 
-# ── Tab 3 — Actual vs Predicted ────────────────────────────────────────────
+# ── Tab 3 ──────────────────────────────────────────────────────────────────
 with tab3:
     st.subheader("Prediction Accuracy")
     bat_pred = bat_rf.predict(X_test_bat)
@@ -508,7 +488,7 @@ with tab3:
     c4.metric("Bowling R²", f"{bowl_r2:.4f}")
 
 
-# ── Tab 4 — Stage Analysis ─────────────────────────────────────────────────
+# ── Tab 4 ──────────────────────────────────────────────────────────────────
 with tab4:
     st.subheader("Performance by Match Stage")
 
@@ -546,7 +526,7 @@ with tab4:
         plt.close()
 
 
-# ── Tab 5 — Player Rankings ────────────────────────────────────────────────
+# ── Tab 5 ──────────────────────────────────────────────────────────────────
 with tab5:
     st.subheader("Player Rankings")
     st.caption("Filter by venue, season and match type then click Apply Filters.")
@@ -640,10 +620,8 @@ with tab5:
         top_bowl = apply_filters_rank(bowling_clean, "bowler", "economy", True, venue_sel, season_sel, type_sel)
 
         st.session_state["rank_results"] = {
-            "top_bat": top_bat,
-            "top_bowl": top_bowl,
-            "venue_sel": venue_sel,
-            "season_sel": season_sel,
+            "top_bat": top_bat, "top_bowl": top_bowl,
+            "venue_sel": venue_sel, "season_sel": season_sel,
         }
 
     if st.session_state["rank_results"] is not None:
@@ -660,10 +638,7 @@ with tab5:
             if len(top_bat) > 0:
                 fig, ax = plt.subplots(figsize=(7, 6))
                 colors_bat = [
-                    "#1D4ED8" if i == 0 else
-                    "#3B82F6" if i == 1 else
-                    "#60A5FA" if i == 2 else
-                    "#BFDBFE"
+                    "#1D4ED8" if i == 0 else "#3B82F6" if i == 1 else "#60A5FA" if i == 2 else "#BFDBFE"
                     for i in range(len(top_bat))
                 ]
                 bars1 = ax.barh(top_bat["player"], top_bat["avg"], color=colors_bat, edgecolor="white", height=0.6)
@@ -672,7 +647,6 @@ with tab5:
                 ax.set_xlabel("Average Runs", fontsize=11)
                 ax.tick_params(axis="y", labelsize=10)
                 ax.invert_yaxis()
-
                 for bar, val, m in zip(bars1, top_bat["avg"], top_bat["matches"]):
                     bar_width = bar.get_width()
                     if bar_width > 5:
@@ -690,8 +664,7 @@ with tab5:
                 plt.close()
                 st.caption(
                     f"🏏 #1 Batter: {top_bat.iloc[0]['player']} — "
-                    f"{top_bat.iloc[0]['avg']:.1f} avg runs "
-                    f"({top_bat.iloc[0]['matches']} matches)"
+                    f"{top_bat.iloc[0]['avg']:.1f} avg runs ({top_bat.iloc[0]['matches']} matches)"
                 )
             else:
                 st.info("No batting data available for this filter combination.")
@@ -701,10 +674,7 @@ with tab5:
             if len(top_bowl) > 0:
                 fig, ax = plt.subplots(figsize=(7, 6))
                 colors_bowl = [
-                    "#065F46" if i == 0 else
-                    "#10B981" if i == 1 else
-                    "#34D399" if i == 2 else
-                    "#A7F3D0"
+                    "#065F46" if i == 0 else "#10B981" if i == 1 else "#34D399" if i == 2 else "#A7F3D0"
                     for i in range(len(top_bowl))
                 ]
                 bars2 = ax.barh(top_bowl["bowler"], top_bowl["avg"], color=colors_bowl, edgecolor="white", height=0.6)
@@ -713,7 +683,6 @@ with tab5:
                 ax.set_xlabel("Average Economy Rate", fontsize=11)
                 ax.tick_params(axis="y", labelsize=9)
                 ax.invert_yaxis()
-
                 for bar, val, m in zip(bars2, top_bowl["avg"], top_bowl["matches"]):
                     bar_width = bar.get_width()
                     if bar_width > 1:
@@ -731,8 +700,7 @@ with tab5:
                 plt.close()
                 st.caption(
                     f"🎯 #1 Bowler: {top_bowl.iloc[0]['bowler']} — "
-                    f"{top_bowl.iloc[0]['avg']:.2f} avg economy "
-                    f"({top_bowl.iloc[0]['matches']} matches)"
+                    f"{top_bowl.iloc[0]['avg']:.2f} avg economy ({top_bowl.iloc[0]['matches']} matches)"
                 )
             else:
                 st.info("No bowling data available for this filter combination.")
@@ -740,7 +708,7 @@ with tab5:
         st.info("Select your filters above and click Apply Filters to see rankings.")
 
 
-# ── Tab 6 — Player Prediction ──────────────────────────────────────────────
+# ── Tab 6 ──────────────────────────────────────────────────────────────────
 with tab6:
     st.subheader("Player Performance Predictor")
     st.caption("Predict for existing players using history or enter stats for a new player.")
@@ -770,7 +738,6 @@ with tab6:
             player_name = st.selectbox("Select Batter", batting_players)
         else:
             player_name = st.selectbox("Select Bowler", bowling_players)
-
     else:
         if mode == "Batting":
             st.markdown("**New Batter Details**")
