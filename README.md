@@ -2,7 +2,44 @@
 
 ### CAP5771 — Introduction to Data Science | University of Florida
 
+# IPL Player Performance Under Pressure: Risk Analysis & Regression Modeling
+
+### CAP5771 — Introduction to Data Science | University of Florida
+
 ---
+
+## 🚀 Streamlit Deployment
+
+This project includes a **Streamlit dashboard (`app.py`)** for direct deployment.
+
+### Deployment Settings
+
+- **Main file:** `app.py`
+- **Python version (Advanced Settings):** `Python 3.12`
+- **Start command:**
+
+```bash
+streamlit run app.py
+```
+
+### Required Files (same directory as `app.py`)
+
+- `batting_clean.csv`
+- `bowling_clean.csv`
+- All `.pkl` model files
+- `bat_features.pkl`
+- `bowl_features.pkl`
+- `requirements.txt`
+- `runtime.txt`
+
+### Notes
+
+- Uses relative paths (`BASE_DIR`) → no path changes needed
+- No database required at runtime
+- No API keys needed
+- Models are pre-trained → inference only
+
+------
 
 ## Project Overview
 
