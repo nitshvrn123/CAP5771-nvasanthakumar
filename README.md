@@ -1,6 +1,3 @@
-# IPL Player Performance Under Pressure: Risk Analysis & Regression Modeling
-
-### CAP5771 — Introduction to Data Science | University of Florida
 
 # IPL Player Performance Under Pressure: Risk Analysis & Regression Modeling
 
@@ -8,7 +5,7 @@
 
 ---
 
-## 🚀 Streamlit Deployment
+## Streamlit Deployment
 
 This project includes a **Streamlit dashboard (`app.py`)** for direct deployment.
 
